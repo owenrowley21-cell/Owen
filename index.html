@@ -15,6 +15,8 @@
             --accent-glow: rgba(79, 70, 229, 0.4);
             --success: #10b981;
             --danger: #ef4444;
+            --streak-orange: #f97316;
+            --streak-glow: rgba(249, 115, 22, 0.25);
         }
 
         body {
@@ -104,16 +106,26 @@
             text-transform: uppercase;
             letter-spacing: 2px;
             font-weight: 700;
-            margin-bottom: 60px;
+            margin-bottom: 40px;
         }
 
         .global-stat-box {
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 30px 20px;
+            padding: 24px 20px;
             border-radius: 24px;
-            margin-bottom: 80px;
+            margin-bottom: 16px;
             backdrop-filter: blur(10px);
+        }
+
+        .streak-stat-box {
+            background: linear-gradient(135deg, #2c1404 0%, #111827 100%);
+            border: 1px solid rgba(249, 115, 22, 0.2);
+            padding: 16px 20px;
+            border-radius: 24px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 25px var(--streak-glow);
         }
 
         .global-number {
@@ -122,6 +134,18 @@
             letter-spacing: -2px;
             color: #ffffff;
             text-shadow: 0 0 30px rgba(255,255,255,0.1);
+        }
+
+        .streak-number {
+            font-size: 38px;
+            font-weight: 900;
+            letter-spacing: -1px;
+            color: var(--streak-orange);
+            text-shadow: 0 0 20px rgba(249, 115, 22, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         button.launch-btn {
@@ -529,6 +553,12 @@
         <div class="total-label" style="font-size: 11px; margin-top: 8px; color:#64748b;">Minutes Tracked Across All Sports</div>
     </div>
 
+    <!-- STREAK BOX -->
+    <div class="streak-stat-box">
+        <div class="total-label" style="margin-bottom: 6px; color: var(--text-muted);">Current Logging Streak</div>
+        <div class="streak-number">🔥 <span id="home-streak-count">0</span> Days</div>
+    </div>
+
     <button class="launch-btn" onclick="navigateTo('screen-tracker')">Start Tracking →</button>
 </div>
 
@@ -743,6 +773,68 @@
         }
     }
 
+    function calculateStreak() {
+        let allTimestamps = [];
+        
+        // Extract all dates across all profiles
+        Object.keys(sportOptions).forEach(sport => {
+            if (appData[sport] && appData[sport].masterVault) {
+                appData[sport].masterVault.forEach(item => {
+                    // Item timestamp looks like: "Jul 14, 2026 @ 11:07 AM"
+                    const datePart = item.timestamp.split(' @')[0];
+                    const parsedDate = new Date(datePart);
+                    if (!isNaN(parsedDate.getTime())) {
+                        // Normalize to local midnight string to avoid time comparison shifts
+                        const dateString = parsedDate.getFullYear() + '-' + (parsedDate.getMonth() + 1) + '-' + parsedDate.getDate();
+                        if (!allTimestamps.includes(dateString)) {
+                            allTimestamps.push(dateString);
+                        }
+                    }
+                });
+            }
+        });
+
+        if (allTimestamps.length === 0) return 0;
+
+        // Convert key format values to sortable timestamps
+        let uniqueDates = allTimestamps.map(d => new Date(d)).sort((a, b) => b - a);
+
+        const today = new Date();
+        const todayStr = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+        const yesterday = new Date(today);
+        yesterday.setDate(today.getDate() - 1);
+        const yesterdayStr = yesterday.getFullYear() + '-' + (yesterday.getMonth() + 1) + '-' + yesterday.getDate();
+
+        let formattedUniqueStrings = uniqueDates.map(d => d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate());
+
+        // Verify if a log was created today or yesterday. If neither, streak is broken.
+        if (!formattedUniqueStrings.includes(todayStr) && !formattedUniqueStrings.includes(yesterdayStr)) {
+            return 0;
+        }
+
+        let streak = 0;
+        let currentCheckDate = new Date(uniqueDates[0]); // Start at latest log date
+
+        // If latest log is yesterday, start calculations from yesterday
+        if (!formattedUniqueStrings.includes(todayStr) && formattedUniqueStrings.includes(yesterdayStr)) {
+            currentCheckDate = new Date(yesterdayStr);
+        } else {
+            currentCheckDate = new Date(todayStr);
+        }
+
+        while (true) {
+            const checkStr = currentCheckDate.getFullYear() + '-' + (currentCheckDate.getMonth() + 1) + '-' + currentCheckDate.getDate();
+            if (formattedUniqueStrings.includes(checkStr)) {
+                streak++;
+                currentCheckDate.setDate(currentCheckDate.getDate() - 1); // Check consecutive previous day
+            } else {
+                break;
+            }
+        }
+
+        return streak;
+    }
+
     function updateGlobalHomeTotal() {
         let activeWeekSum = 0;
         Object.keys(sportOptions).forEach(sport => {
@@ -753,6 +845,7 @@
         
         const grandTotal = (appData.historicalGrandTotal || 0) + activeWeekSum;
         document.getElementById('global-all-time-total').innerText = grandTotal;
+        document.getElementById('home-streak-count').innerText = calculateStreak();
     }
 
     function navigateTo(screenId) {
