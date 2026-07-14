@@ -46,7 +46,6 @@
       padding: 20px;
     }
 
-    /* Container holding the mobile-friendly dashboard layout */
     .app-container {
       width: 100%;
       max-width: 480px;
@@ -156,33 +155,36 @@
     }
 
     /* ==========================================
-       FEATURE 1: INTERACTIVE GOAL RING
+       PROGRESS RING LAYOUT (FEATURE 1)
        ========================================== */
     .goal-section {
       display: flex;
       align-items: center;
-      justify-content: space-around;
-      gap: 15px;
+      justify-content: space-between;
+      gap: 20px;
     }
 
     .goal-ring-container {
       position: relative;
-      width: 160px;
-      height: 160px;
+      width: 150px;
+      height: 150px;
       display: flex;
       justify-content: center;
       align-items: center;
+      flex-shrink: 0;
     }
 
     .goal-ring-container svg {
       position: absolute;
       top: 0;
       left: 0;
+      width: 100%;
+      height: 100%;
     }
 
     .ring-bg {
       fill: none;
-      stroke: rgba(255, 255, 255, 0.04);
+      stroke: rgba(255, 255, 255, 0.05);
     }
 
     .ring-progress {
@@ -191,7 +193,7 @@
       stroke-linecap: round;
       transform: rotate(-90deg);
       transform-origin: center;
-      transition: stroke-dashoffset 0.35s ease;
+      transition: stroke-dashoffset 0.4s ease;
       filter: drop-shadow(0 0 6px var(--accent-glow));
     }
 
@@ -201,33 +203,34 @@
       align-items: center;
       z-index: 10;
       text-align: center;
+      pointer-events: auto;
     }
 
     .ring-current-min {
       font-size: 28px;
       font-weight: 800;
+      color: var(--text-color);
+      line-height: 1.1;
     }
 
     .ring-divider {
-      font-size: 11px;
+      font-size: 12px;
       color: var(--text-muted);
-      margin: -2px 0;
+      margin: 1px 0;
     }
 
-    /* Interactive contenteditable goal input */
     .ring-goal-min {
       font-size: 16px;
       font-weight: 700;
       color: var(--accent-color);
       border-bottom: 1px dashed var(--accent-color);
-      padding: 2px 6px;
+      padding: 1px 4px;
       cursor: pointer;
-      transition: background 0.2s ease;
     }
 
     .ring-goal-min:focus {
       outline: none;
-      background: rgba(0, 242, 254, 0.1);
+      background: rgba(0, 242, 254, 0.15);
       border-radius: 4px;
       border-bottom-style: solid;
     }
@@ -236,7 +239,7 @@
       font-size: 10px;
       color: var(--text-muted);
       text-transform: uppercase;
-      margin-top: 4px;
+      margin-top: 3px;
       letter-spacing: 0.5px;
     }
 
@@ -245,9 +248,10 @@
     }
 
     .goal-stats h2 {
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 4px;
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 6px;
+      color: var(--text-color);
     }
 
     .goal-stats p {
@@ -257,31 +261,26 @@
     }
 
     /* ==========================================
-       FEATURE 2: TROPHY CASE
+       TROPHY CASE LAYOUT (FEATURE 2)
        ========================================== */
     .trophy-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
+      gap: 12px;
     }
 
     .trophy-item {
       background: rgba(255, 255, 255, 0.01);
       border: 1px solid var(--card-border);
       border-radius: 12px;
-      padding: 12px 8px;
+      padding: 16px 8px;
       text-align: center;
-      transition: border-color 0.2s ease;
-    }
-
-    .trophy-item:hover {
-      border-color: rgba(255, 255, 255, 0.1);
     }
 
     .trophy-icon {
-      font-size: 22px;
+      font-size: 24px;
       display: block;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
 
     .trophy-info label {
@@ -290,16 +289,17 @@
       color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      margin-bottom: 2px;
+      margin-bottom: 4px;
     }
 
     .trophy-info span {
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 700;
+      color: var(--text-color);
     }
 
     /* ==========================================
-       4. STOPWATCH & WORKSPACE SCREEN
+       4. STOPWATCH & TRACKER ELEMENTS
        ========================================== */
     .timer-display {
       font-size: 54px;
@@ -333,18 +333,10 @@
       box-shadow: 0 4px 12px var(--accent-glow);
     }
 
-    .btn-primary:hover {
-      transform: translateY(-1px);
-    }
-
     .btn-secondary {
       background: rgba(255, 255, 255, 0.06);
       color: var(--text-color);
       border: 1px solid var(--card-border);
-    }
-
-    .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.1);
     }
 
     .input-group {
@@ -375,7 +367,6 @@
       border-color: var(--accent-color);
     }
 
-    /* RPE Chip Selectors */
     .rpe-container {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
@@ -392,38 +383,16 @@
       border: 2px solid transparent;
       background: rgba(255, 255, 255, 0.03);
       color: var(--text-muted);
-      transition: all 0.2s ease;
     }
 
-    /* Color States for selected RPE */
-    .rpe-chip[data-level="easy"].selected {
-      border-color: var(--rpe-easy);
-      color: var(--rpe-easy);
-      background: rgba(0, 230, 118, 0.08);
-    }
-    .rpe-chip[data-level="moderate"].selected {
-      border-color: var(--rpe-moderate);
-      color: var(--rpe-moderate);
-      background: rgba(255, 214, 0, 0.08);
-    }
-    .rpe-chip[data-level="hard"].selected {
-      border-color: var(--rpe-hard);
-      color: var(--rpe-hard);
-      background: rgba(255, 145, 0, 0.08);
-    }
-    .rpe-chip[data-level="veryhard"].selected {
-      border-color: var(--rpe-veryhard);
-      color: var(--rpe-veryhard);
-      background: rgba(255, 61, 0, 0.08);
-    }
-    .rpe-chip[data-level="max"].selected {
-      border-color: var(--rpe-max);
-      color: var(--rpe-max);
-      background: rgba(213, 0, 0, 0.08);
-    }
+    .rpe-chip[data-level="easy"].selected { border-color: var(--rpe-easy); color: var(--rpe-easy); background: rgba(0, 230, 118, 0.08); }
+    .rpe-chip[data-level="moderate"].selected { border-color: var(--rpe-moderate); color: var(--rpe-moderate); background: rgba(255, 214, 0, 0.08); }
+    .rpe-chip[data-level="hard"].selected { border-color: var(--rpe-hard); color: var(--rpe-hard); background: rgba(255, 145, 0, 0.08); }
+    .rpe-chip[data-level="veryhard"].selected { border-color: var(--rpe-veryhard); color: var(--rpe-veryhard); background: rgba(255, 61, 0, 0.08); }
+    .rpe-chip[data-level="max"].selected { border-color: var(--rpe-max); color: var(--rpe-max); background: rgba(213, 0, 0, 0.08); }
 
     /* ==========================================
-       5. VAULT / LOGS SCREEN
+       5. VAULT LOG LISTS
        ========================================== */
     .log-list {
       display: flex;
@@ -441,75 +410,26 @@
       align-items: center;
     }
 
-    .log-details h4 {
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 2px;
-    }
-
-    .log-details span {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .log-metrics {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .log-duration {
-      font-size: 15px;
-      font-weight: 700;
-    }
-
-    .log-rpe-badge {
-      font-size: 10px;
-      font-weight: 800;
-      padding: 4px 8px;
-      border-radius: 6px;
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 40px 20px;
-      color: var(--text-muted);
-      font-size: 14px;
-    }
-
-    .dangerous-btn {
-      background: rgba(213, 0, 0, 0.1);
-      border: 1px solid rgba(213, 0, 0, 0.2);
-      color: var(--rpe-max);
-      width: 100%;
-      padding: 10px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: background 0.2s ease;
-    }
-
-    .dangerous-btn:hover {
-      background: rgba(213, 0, 0, 0.2);
-    }
+    .log-details h4 { font-size: 14px; font-weight: 600; }
+    .log-details span { font-size: 11px; color: var(--text-muted); }
+    .log-metrics { display: flex; align-items: center; gap: 12px; }
+    .log-duration { font-size: 15px; font-weight: 700; }
+    .log-rpe-badge { font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 6px; }
+    .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); }
+    .dangerous-btn { background: rgba(213, 0, 0, 0.1); border: 1px solid rgba(213, 0, 0, 0.2); color: var(--rpe-max); width: 100%; padding: 10px; border-radius: 8px; font-weight: 700; cursor: pointer; }
   </style>
 </head>
 <body>
 
   <div class="app-container">
-    <!-- Header Area -->
     <header>
-      <div class="brand">
-        <h1>APEX TRACKER</h1>
-      </div>
+      <div class="brand"><h1>APEX TRACKER</h1></div>
       <div class="header-badges">
-        <div class="badge" id="profileBadge">Owen</div>
+        <div class="badge">Owen</div>
         <div class="badge streak-badge" id="streakBadge">🔥 0 Days</div>
       </div>
     </header>
 
-    <!-- Navigation Tabs -->
     <nav>
       <div class="nav-tab active" onclick="switchTab('home')">Home</div>
       <div class="nav-tab" onclick="switchTab('tracker')">Tracker</div>
@@ -519,20 +439,19 @@
     <!-- 1. HOME SCREEN -->
     <div id="homeScreen" class="screen active">
       
-      <!-- FEATURE 1: Interactive Goal Ring Section -->
+      <!-- INTERACTIVE PROGRESS RING CARD -->
       <div class="card">
         <div class="goal-section">
           <div class="goal-ring-container">
-            <svg width="160" height="160" viewBox="0 0 160 160">
+            <svg viewBox="0 0 160 160">
               <circle class="ring-bg" cx="80" cy="80" r="68" stroke-width="10"></circle>
-              <!-- Stroke array represents circumference: 2 * pi * r = 2 * 3.14159 * 68 ≈ 427.25 -->
+              <!-- 2 * pi * 68 = ~427.25. Setting up dashboard layout path explicitly -->
               <circle id="progressCircle" class="ring-progress" cx="80" cy="80" r="68" stroke-width="10" stroke-dasharray="427.25" stroke-dashoffset="427.25"></circle>
             </svg>
             <div class="ring-text">
               <span class="ring-current-min" id="ringCurrentMins">0</span>
               <span class="ring-divider">/</span>
-              <!-- contenteditable is enabled to let the user update directly inside the UI -->
-              <span class="ring-goal-min" id="ringGoalMins" contenteditable="true" title="Click to change goal">150</span>
+              <span class="ring-goal-min" id="ringGoalMins" contenteditable="true">150</span>
               <div class="ring-label">min goal</div>
             </div>
           </div>
@@ -543,7 +462,7 @@
         </div>
       </div>
 
-      <!-- FEATURE 2: Trophy Case Section -->
+      <!-- THE TROPHY CASE CARD -->
       <div class="card">
         <h3>🏆 Trophy Case</h3>
         <div class="trophy-grid">
@@ -573,35 +492,29 @@
 
     </div>
 
-    <!-- 2. TRACKER/WORKSPACE SCREEN -->
+    <!-- 2. TRACKER WORKSPACE SCREEN -->
     <div id="trackerScreen" class="screen">
-      
-      <!-- Stopwatch Card -->
       <div class="card">
-        <h3>⏱️ Timer Workspace</h3>
+        <h3>⏱ Honor Timer</h3>
         <div class="timer-display" id="stopwatchDisplay">00:00</div>
         <div class="timer-controls">
           <button class="btn btn-primary" id="startBtn" onclick="toggleTimer()">Start</button>
-          <button class="btn btn-secondary" id="resetBtn" onclick="resetTimer()">Reset</button>
+          <button class="btn btn-secondary" onclick="resetTimer()">Reset</button>
         </div>
       </div>
 
-      <!-- Manual Log/Confirmation Form -->
       <div class="card">
         <h3>📝 Session Logging</h3>
-        
         <div class="input-group">
           <label for="workoutActivity">Activity</label>
-          <input type="text" id="workoutActivity" class="form-control" placeholder="Soccer drills, speed training, cardio...">
+          <input type="text" id="workoutActivity" class="form-control" placeholder="Soccer drills, conditioning, lifting...">
         </div>
-
         <div class="input-group">
           <label for="manualMinutes">Duration (Minutes)</label>
           <input type="number" id="manualMinutes" class="form-control" placeholder="30" min="1">
         </div>
-
         <div class="input-group">
-          <label>Intensity (Rate of Perceived Exertion - RPE)</label>
+          <label>Intensity (RPE Scale)</label>
           <div class="rpe-container">
             <div class="rpe-chip" data-level="easy" onclick="selectRPE('easy', 2)">1-2<br>Easy</div>
             <div class="rpe-chip" data-level="moderate" onclick="selectRPE('moderate', 4)">3-4<br>Mod</div>
@@ -610,49 +523,36 @@
             <div class="rpe-chip" data-level="max" onclick="selectRPE('max', 10)">9-10<br>Max</div>
           </div>
         </div>
-
         <button class="btn btn-primary" style="width: 100%; margin-top: 10px;" onclick="logSession()">Commit Session</button>
       </div>
-
     </div>
 
-    <!-- 3. VAULT SCREEN (LOG HISTORY & CLEAR SETTINGS) -->
+    <!-- 3. VAULT SCREEN -->
     <div id="vaultScreen" class="screen">
-      
       <div class="card">
         <h3>📁 All Logged Sessions</h3>
-        <div class="log-list" id="logList">
-          <!-- Dynamic entries will be inserted here -->
-        </div>
+        <div class="log-list" id="logList"></div>
       </div>
-
       <div class="card">
         <h3>⚠️ Danger Zone</h3>
         <button class="dangerous-btn" onclick="clearAllData()">Reset All App Data</button>
       </div>
-
     </div>
 
   </div>
 
   <!-- ==========================================
        6. APPLICATION JAVASCRIPT ENGINE
-       ========================================== -->
+       ========================================== */ -->
   <script>
-    // State Tracking variables
     let history = JSON.parse(localStorage.getItem('workoutHistory')) || [];
     let activeRPE = null;
     let rpeNumValue = 0;
-
-    // Stopwatch variables
     let timerInterval = null;
     let timerSeconds = 0;
     let isRunning = false;
-
-    // Goal Configuration (Feature 1 default fallback: 150)
     let weeklyGoal = parseInt(localStorage.getItem('weeklyMinGoal')) || 150;
 
-    // RPE Color Badge styles maps
     const rpeClassMap = {
       2: { text: 'EASY', bg: 'rgba(0, 230, 118, 0.1)', color: 'var(--rpe-easy)' },
       4: { text: 'MODERATE', bg: 'rgba(255, 214, 0, 0.1)', color: 'var(--rpe-moderate)' },
@@ -661,11 +561,7 @@
       10: { text: 'MAX EFFORT', bg: 'rgba(213, 0, 0, 0.1)', color: 'var(--rpe-max)' }
     };
 
-    // ==========================================
-    // INITIALIZATION & TAB CONTROLLERS
-    // ==========================================
     window.addEventListener('DOMContentLoaded', () => {
-      // Set initial goal text in elements
       document.getElementById('ringGoalMins').innerText = weeklyGoal;
       setupGoalRingEditable();
       recalculateStreak();
@@ -690,9 +586,6 @@
       }
     }
 
-    // ==========================================
-    // WORKSPACE & STOPWATCH ENGINE
-    // ==========================================
     function toggleTimer() {
       const startBtn = document.getElementById('startBtn');
       if (isRunning) {
@@ -705,8 +598,6 @@
         timerInterval = setInterval(() => {
           timerSeconds++;
           updateTimerDisplay();
-          
-          // Auto-update duration field as minutes tick by
           const currentMins = Math.floor(timerSeconds / 60);
           if (currentMins > 0) {
             document.getElementById('manualMinutes').value = currentMins;
@@ -730,7 +621,6 @@
       document.getElementById('stopwatchDisplay').innerText = `${mins}:${secs}`;
     }
 
-    // RPE Selector logic
     function selectRPE(level, value) {
       activeRPE = level;
       rpeNumValue = value;
@@ -738,16 +628,14 @@
       document.querySelector(`.rpe-chip[data-level="${level}"]`).classList.add('selected');
     }
 
-    // Committing logged sessions
     function logSession() {
       const activityInput = document.getElementById('workoutActivity');
       const minutesInput = document.getElementById('manualMinutes');
-
       const activity = activityInput.value.trim() || "Physical Training";
       const duration = parseInt(minutesInput.value);
 
       if (!duration || duration <= 0) {
-        alert("Please track or enter a valid duration before logging!");
+        alert("Please track or enter a valid duration!");
         return;
       }
       if (!activeRPE) {
@@ -755,7 +643,6 @@
         return;
       }
 
-      // Create log structure
       const newSession = {
         id: Date.now(),
         date: new Date().toISOString(),
@@ -764,11 +651,10 @@
         rpe: rpeNumValue
       };
 
-      history.unshift(newSession); // Add newest session to front
+      history.unshift(newSession);
       localStorage.setItem('workoutHistory', JSON.stringify(history));
 
-      // Visual feedback and Reset Form Fields
-      alert("Session logged to Vault successfully!");
+      alert("Session logged successfully!");
       activityInput.value = "";
       minutesInput.value = "";
       resetTimer();
@@ -776,90 +662,62 @@
       activeRPE = null;
       rpeNumValue = 0;
 
-      // Update streaks & return home
       recalculateStreak();
       switchTab('home');
     }
 
-    // ==========================================
-    // CORE STREAK ENGINE
-    // ==========================================
     function recalculateStreak() {
       if (history.length === 0) {
         updateStreakDisplay(0);
         return;
       }
-
-      // Format date key to track distinct workout days in YYYY-MM-DD
-      const workoutDays = new Set(
-        history.map(session => session.date.split('T')[0])
-      );
-
-      const today = new Date();
+      const workoutDays = new Set(history.map(s => s.date.split('T')[0]));
       let tempDate = new Date();
       let currentStreak = 0;
 
-      // Scan backward starting today or yesterday to calculate active streak
       for (let i = 0; i < 365; i++) {
         const formattedDate = tempDate.toISOString().split('T')[0];
-        
         if (workoutDays.has(formattedDate)) {
           currentStreak++;
-        } else {
-          // If we find a gap on a day that is NOT today, streak breaks
-          if (i > 0) {
-            break;
-          }
+        } else if (i > 0) {
+          break;
         }
-        // Jump back 1 day
         tempDate.setDate(tempDate.getDate() - 1);
       }
 
-      // All-Time Peak Record Streak Storage
       let recordStreak = parseInt(localStorage.getItem('allTimeStreak')) || 0;
       if (currentStreak > recordStreak) {
         localStorage.setItem('allTimeStreak', currentStreak);
       }
-
       updateStreakDisplay(currentStreak);
     }
 
-    function updateStreakDisplay(streakCount) {
-      const streakBadge = document.getElementById('streakBadge');
-      streakBadge.innerText = `🔥 ${streakCount} Day${streakCount !== 1 ? 's' : ''}`;
+    function updateStreakDisplay(count) {
+      document.getElementById('streakBadge').innerText = `🔥 ${count} Day${count !== 1 ? 's' : ''}`;
     }
 
-    // ==========================================
-    // DASHBOARD & TROPHY UPDATE ENGINE
-    // ==========================================
     function updateDashboardUI() {
-      // 1. Calculate and Render Weekly Minutes Target
       const currentWeeklyMins = calculateCurrentWeeklyMinutes();
       document.getElementById('ringCurrentMins').innerText = currentWeeklyMins;
       
-      // Animate SVG Ring Circumference offset (r=68 -> perimeter=427.25)
       const ringCircle = document.getElementById('progressCircle');
       const perimeter = 427.25;
-      
       let percent = weeklyGoal > 0 ? (currentWeeklyMins / weeklyGoal) : 0;
-      if (percent > 1) percent = 1; // Clamp circle drawing at 100%
+      if (percent > 1) percent = 1;
       
-      const strokeOffset = perimeter - (percent * perimeter);
-      ringCircle.style.strokeDashoffset = strokeOffset;
+      ringCircle.style.strokeDashoffset = perimeter - (percent * perimeter);
 
-      // Update descriptive text below the progress indicator
       const percentLabel = Math.round((weeklyGoal > 0 ? (currentWeeklyMins / weeklyGoal) : 0) * 100);
       document.getElementById('weeklyPercent').innerText = `${percentLabel}% Done`;
       
       const weeklyContext = document.getElementById('weeklyContext');
       if (percentLabel >= 100) {
-        weeklyContext.innerText = "Weekly target secured! Keep grinding to maintain high intensity.";
+        weeklyContext.innerText = "Weekly target secured! Absolute masterclass consistency.";
       } else {
         const minsLeft = weeklyGoal - currentWeeklyMins;
-        weeklyContext.innerText = `You need ${minsLeft > 0 ? minsLeft : 0} more minutes to lock in your weekly baseline objective.`;
+        weeklyContext.innerText = `You need ${minsLeft > 0 ? minsLeft : 0} more minutes to hit your clear weekly baseline goal.`;
       }
 
-      // 2. Load Trophy Case Records
       const maxStreak = localStorage.getItem('allTimeStreak') || 0;
       let maxDuration = 0;
       let maxRPE = 0;
@@ -874,76 +732,47 @@
       document.getElementById('recordRPE').innerText = `RPE ${maxRPE}`;
     }
 
-    // Calculate sum of minutes logged in current ISO week (Mon-Sun)
     function calculateCurrentWeeklyMinutes() {
       const now = new Date();
-      const dayOfWeek = now.getDay() === 0 ? 6 : now.getDay() - 1; // Normalize Monday = 0
-      
-      // Calculate start of Monday
+      const dayOfWeek = now.getDay() === 0 ? 6 : now.getDay() - 1;
       const startOfWeek = new Date(now);
       startOfWeek.setDate(now.getDate() - dayOfWeek);
       startOfWeek.setHours(0, 0, 0, 0);
 
       let totalMinutes = 0;
       history.forEach(session => {
-        const sessionDate = new Date(session.date);
-        if (sessionDate >= startOfWeek) {
+        if (new Date(session.date) >= startOfWeek) {
           totalMinutes += session.duration;
         }
       });
-
       return totalMinutes;
     }
 
-    // Setup interactive inline element editing for the weekly target
     function setupGoalRingEditable() {
       const goalEl = document.getElementById('ringGoalMins');
-      
       goalEl.addEventListener('blur', () => {
         let value = parseInt(goalEl.innerText.trim());
-        if (isNaN(value) || value <= 0) {
-          value = 150; // Fallback reset
-        }
+        if (isNaN(value) || value <= 0) value = 150;
         weeklyGoal = value;
         localStorage.setItem('weeklyMinGoal', value);
         goalEl.innerText = value;
         updateDashboardUI();
       });
-
       goalEl.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          goalEl.blur(); // Triggers blur saving handler
-        }
+        if (e.key === 'Enter') { e.preventDefault(); goalEl.blur(); }
       });
     }
 
-    // ==========================================
-    // LOGS RENDERING & PURGING
-    // ==========================================
     function renderLogs() {
       const container = document.getElementById('logList');
       container.innerHTML = '';
-
       if (history.length === 0) {
-        container.innerHTML = `
-          <div class="empty-state">
-            No training sessions cataloged in the Vault yet. Drop into the workspace tracker and log some miles.
-          </div>
-        `;
+        container.innerHTML = `<div class="empty-state">No sessions cataloged in the Vault yet.</div>`;
         return;
       }
-
       history.forEach(session => {
         const dateObj = new Date(session.date);
-        const formattedDate = dateObj.toLocaleDateString(undefined, { 
-          month: 'short', 
-          day: 'numeric' 
-        }) + ' at ' + dateObj.toLocaleTimeString(undefined, {
-          hour: '2-digit',
-          minute: '2-digit'
-        });
-
+        const formattedDate = dateObj.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) + ' at ' + dateObj.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
         const rpeStyle = rpeClassMap[session.rpe] || { text: 'N/A', bg: 'rgba(255,255,255,0.1)', color: '#fff' };
 
         const logItem = document.createElement('div');
@@ -956,7 +785,7 @@
           <div class="log-metrics">
             <span class="log-duration">${session.duration} min</span>
             <span class="log-rpe-badge" style="background: ${rpeStyle.bg}; color: ${rpeStyle.color}; border: 1px solid ${rpeStyle.color}">
-              ${rpeStyle.text} (RPE ${session.rpe})
+              ${rpeStyle.text}
             </span>
           </div>
         `;
@@ -964,15 +793,12 @@
       });
     }
 
-    // Quick helper to block HTML injection in text inputs
     function escapeHTML(str) {
-      return str.replace(/[&<>'"]/g, 
-        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-      );
+      return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
     }
 
     function clearAllData() {
-      if (confirm("Are you absolutely sure you want to purge all workouts, streaks, and trophies? This action cannot be undone.")) {
+      if (confirm("Are you absolutely sure you want to purge all workouts, streaks, and trophies?")) {
         localStorage.clear();
         history = [];
         weeklyGoal = 150;
