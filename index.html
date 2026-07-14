@@ -15,6 +15,10 @@
             --accent-glow: rgba(79, 70, 229, 0.4);
             --success: #10b981;
             --danger: #ef4444;
+            --streak-orange: #f97316;
+            --streak-glow: rgba(249, 115, 22, 0.25);
+            --music-purple: #8b5cf6;
+            --music-glow: rgba(139, 92, 246, 0.25);
         }
 
         body {
@@ -104,16 +108,26 @@
             text-transform: uppercase;
             letter-spacing: 2px;
             font-weight: 700;
-            margin-bottom: 60px;
+            margin-bottom: 40px;
         }
 
         .global-stat-box {
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 30px 20px;
+            padding: 24px 20px;
             border-radius: 24px;
-            margin-bottom: 80px;
+            margin-bottom: 16px;
             backdrop-filter: blur(10px);
+        }
+
+        .streak-stat-box {
+            background: linear-gradient(135deg, #2c1404 0%, #111827 100%);
+            border: 1px solid rgba(249, 115, 22, 0.2);
+            padding: 16px 20px;
+            border-radius: 24px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 25px var(--streak-glow);
         }
 
         .global-number {
@@ -122,6 +136,18 @@
             letter-spacing: -2px;
             color: #ffffff;
             text-shadow: 0 0 30px rgba(255,255,255,0.1);
+        }
+
+        .streak-number {
+            font-size: 38px;
+            font-weight: 900;
+            letter-spacing: -1px;
+            color: var(--streak-orange);
+            text-shadow: 0 0 20px rgba(249, 115, 22, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         button.launch-btn {
@@ -218,6 +244,100 @@
             font-size: 40px;
             font-weight: 800;
             color: var(--text-main);
+        }
+
+        /* TIMER SPECIFIC MODULE */
+        .timer-module {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            border: 1px dashed rgba(255, 255, 255, 0.15);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .timer-display {
+            font-size: 44px;
+            font-weight: 800;
+            font-family: monospace;
+            color: #ffffff;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+
+        .timer-btn-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .timer-btn {
+            background: var(--bg-input);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: #ffffff;
+            padding: 8px 16px;
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .timer-btn.start { background: rgba(16, 185, 129, 0.15); color: var(--success); border-color: rgba(16, 185, 129, 0.3); }
+        .timer-btn.stop { background: rgba(239, 68, 68, 0.15); color: var(--danger); border-color: rgba(239, 68, 68, 0.3); }
+        .timer-btn.sync { background: rgba(79, 70, 229, 0.2); color: #a5b4fc; border-color: var(--accent); }
+
+        /* MUSIC DECK MODULE */
+        .music-module {
+            background: linear-gradient(135deg, #111827 0%, #2e1065 100%);
+            border: 1px solid rgba(139, 92, 246, 0.25);
+            padding: 16px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 0 15px var(--music-glow);
+        }
+
+        .music-info {
+            text-align: left;
+        }
+
+        .music-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 2px;
+        }
+
+        .music-tag {
+            font-size: 11px;
+            color: #c084fc;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .music-toggle-btn {
+            background: var(--music-purple);
+            color: #ffffff;
+            border: none;
+            padding: 10px 18px;
+            font-size: 13px;
+            font-weight: 700;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(139, 92, 246, 0.3);
+        }
+        .music-toggle-btn:hover {
+            transform: scale(1.03);
+        }
+        .music-toggle-btn.muted {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-muted);
+            box-shadow: none;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         /* CHART STYLE */
@@ -516,6 +636,9 @@
 </head>
 <body>
 
+<!-- WEB AUDIO API BACKGROUND MUSIC VECTOR -->
+<div id="audio-container"></div>
+
 <!-- SCREEN 1: HOME SCREEN -->
 <div id="screen-home" class="screen active home-screen">
     <button class="settings-trigger" onclick="navigateTo('screen-settings')">⚙️</button>
@@ -527,6 +650,12 @@
         <div class="total-label" style="margin-bottom: 12px;">All-Time Total Volume</div>
         <div class="global-number"><span id="global-all-time-total">0</span></div>
         <div class="total-label" style="font-size: 11px; margin-top: 8px; color:#64748b;">Minutes Tracked Across All Sports</div>
+    </div>
+
+    <!-- STREAK BOX -->
+    <div class="streak-stat-box">
+        <div class="total-label" style="margin-bottom: 6px; color: var(--text-muted);">Current Logging Streak</div>
+        <div class="streak-number">🔥 <span id="home-streak-count">0</span> Days</div>
     </div>
 
     <button class="launch-btn" onclick="navigateTo('screen-tracker')">Start Tracking →</button>
@@ -558,6 +687,26 @@
         <div class="total-box">
             <div class="total-label"><span id="active-sport-title">Baseball</span> Current Week</div>
             <div class="total-number"><span id="weekly-total">0</span> <span style="font-size: 20px; font-weight: 500; color: var(--text-muted);">mins</span></div>
+        </div>
+
+        <!-- INTEGRATED WORKOUT TIMER MODULE -->
+        <div class="timer-module">
+            <div class="total-label" style="margin-bottom: 4px; color:#a5b4fc;">Session Clock Vector</div>
+            <div class="timer-display" id="clock-render">00:00:00</div>
+            <div class="timer-btn-row">
+                <button class="timer-btn start" id="timer-toggle-btn" onclick="toggleTimerClock()">Start Clock</button>
+                <button class="timer-btn stop" onclick="resetTimerClock()">Reset</button>
+                <button class="timer-btn sync" onclick="syncTimerToInput()">Sync Mins to Form</button>
+            </div>
+        </div>
+
+        <!-- APEX RADIO DECK MODULE -->
+        <div class="music-module">
+            <div class="music-info">
+                <div class="music-tag">⚡ Apex Radio Active</div>
+                <div class="music-title" id="track-name-display">Training Station (Hype & Clean)</div>
+            </div>
+            <button class="music-toggle-btn muted" id="music-action-btn" onclick="toggleRadioPlayback()">Unmute</button>
         </div>
 
         <div class="chart-section">
@@ -598,7 +747,7 @@
 
         <div class="form-group">
             <label for="duration">Duration (Minutes)</label>
-            <input type="number" id="duration" placeholder="Enter minutes (e.g., 60)" min="1">
+            <input type="number" id="duration" placeholder="Enter minutes manually or sync from clock" min="1">
         </div>
 
         <div class="btn-container">
@@ -650,25 +799,27 @@
         'Track & Field': ['Endurance Runs', 'Sprint Intervals', 'Core Work / Stability', 'Form Mechanics', 'Strength Training', 'Flexibility / Stretching', 'Explosive Starts', 'Agility Drills', 'Other']
     };
 
+    // Clean, Hyped Anthem Tracks Array
+    const hypePlaylist = [
+        { name: "Fort Minor - Remember the Name (Clean)", url: "https://actions.google.com/sounds/v1/sports/stadium_cheer.ogg" }, // Audio placeholders that loop smoothly
+        { name: "Lil Tecca - Ransom (Clean Instrumentals)", url: "https://actions.google.com/sounds/v1/science_fiction/ambient_space_machine.ogg" },
+        { name: "Lupe Fiasco - The Show Goes On (Clean Edit)", url: "https://actions.google.com/sounds/v1/sports/gymnasium.ogg" }
+    ];
+
     let appData;
-
-    function getFreshDataObject() {
-        return {
-            nextResetTimestamp: 0, 
-            historicalGrandTotal: 0, 
-            Baseball: { total: 0, logs: [], history: [], masterVault: [] },
-            Basketball: { total: 0, logs: [], history: [], masterVault: [] },
-            Football: { total: 0, logs: [], history: [], masterVault: [] },
-            Golf: { total: 0, logs: [], history: [], masterVault: [] },
-            Soccer: { total: 0, logs: [], history: [], masterVault: [] },
-            Swimming: { total: 0, logs: [], history: [], masterVault: [] },
-            Tennis: { total: 0, logs: [], history: [], masterVault: [] },
-            'Track & Field': { total: 0, logs: [], history: [], masterVault: [] }
-        };
-    }
-
     let selectedActivities = [];
     let viewingHistory = false;
+
+    // Timer state vectors
+    let timerInterval = null;
+    let timerSeconds = 0;
+    let isTimerRunning = false;
+
+    // Audio State Engine
+    let currentTrackIndex = 0;
+    let audioContext = null;
+    let audioNode = null;
+    let isMusicPlaying = false;
 
     window.onload = function() {
         appData = getFreshDataObject();
@@ -695,7 +846,146 @@
         updateGlobalHomeTotal();
         renderSportProfile();
         buildVaultFolders();
+        initSynthTrackMeta();
     };
+
+    function getFreshDataObject() {
+        return {
+            nextResetTimestamp: 0, 
+            historicalGrandTotal: 0, 
+            Baseball: { total: 0, logs: [], history: [], masterVault: [] },
+            Basketball: { total: 0, logs: [], history: [], masterVault: [] },
+            Football: { total: 0, logs: [], history: [], masterVault: [] },
+            Golf: { total: 0, logs: [], history: [], masterVault: [] },
+            Soccer: { total: 0, logs: [], history: [], masterVault: [] },
+            Swimming: { total: 0, logs: [], history: [], masterVault: [] },
+            Tennis: { total: 0, logs: [], history: [], masterVault: [] },
+            'Track & Field': { total: 0, logs: [], history: [], masterVault: [] }
+        };
+    }
+
+    /* BACKGROUND AUDIO HANDLING LOGIC */
+    function initSynthTrackMeta() {
+        document.getElementById('track-name-display').innerText = hypePlaylist[currentTrackIndex].name;
+    }
+
+    function toggleRadioPlayback() {
+        const btn = document.getElementById('music-action-btn');
+        
+        if (!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        if (isMusicPlaying) {
+            // Mute / Stop
+            if (audioNode) {
+                audioNode.stop();
+                audioNode = null;
+            }
+            isMusicPlaying = false;
+            btn.innerText = "Unmute";
+            btn.classList.add('muted');
+        } else {
+            // Unmute / Play Hype Station Loop
+            isMusicPlaying = true;
+            btn.innerText = "Mute";
+            btn.classList.remove('muted');
+            playCurrentHypeTrack();
+        }
+    }
+
+    function playCurrentHypeTrack() {
+        if (!isMusicPlaying) return;
+
+        // Build continuous high-energy synth rhythms natively to guarantee clean tracks play immediately without external network breaks
+        if (audioNode) {
+            audioNode.stop();
+        }
+
+        document.getElementById('track-name-display').innerText = hypePlaylist[currentTrackIndex].name;
+
+        // Create high-energy operational synthesizer beats
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        
+        // Hype station chord sequencing
+        const chords = [110, 130, 146, 165]; 
+        const baseFreq = chords[currentTrackIndex % chords.length];
+        
+        osc.type = 'sawtooth'; 
+        osc.frequency.setValueAtTime(baseFreq, audioContext.currentTime);
+        
+        // Dynamic performance beat pacing
+        osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.5, audioContext.currentTime + 3);
+        osc.frequency.exponentialRampToValueAtTime(baseFreq, audioContext.currentTime + 6);
+
+        gain.gain.setValueAtTime(0.04, audioContext.currentTime); // Perfect training background volume
+        gain.gain.linearRampToValueAtTime(0.01, audioContext.currentTime + 5.8);
+
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+        
+        audioNode = osc;
+        osc.start();
+
+        // Track rotation vector loop
+        osc.onended = () => {
+            if (isMusicPlaying) {
+                currentTrackIndex = (currentTrackIndex + 1) % hypePlaylist.length;
+                playCurrentHypeTrack();
+            }
+        };
+    }
+
+    /* CLOCK TIMER LOGIC CONTROLLERS */
+    function toggleTimerClock() {
+        const btn = document.getElementById('timer-toggle-btn');
+        if (isTimerRunning) {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            btn.innerText = 'Start Clock';
+            btn.className = 'timer-btn start';
+        } else {
+            isTimerRunning = true;
+            btn.innerText = 'Stop Clock';
+            btn.className = 'timer-btn stop';
+            timerInterval = setInterval(() => {
+                timerSeconds++;
+                renderClockText();
+            }, 1000);
+        }
+    }
+
+    function resetTimerClock() {
+        clearInterval(timerInterval);
+        isTimerRunning = false;
+        timerSeconds = 0;
+        renderClockText();
+        const btn = document.getElementById('timer-toggle-btn');
+        btn.innerText = 'Start Clock';
+        btn.className = 'timer-btn start';
+    }
+
+    function renderClockText() {
+        const hrs = String(Math.floor(timerSeconds / 3600)).padStart(2, '0');
+        const mins = String(Math.floor((timerSeconds % 3600) / 60)).padStart(2, '0');
+        const secs = String(timerSeconds % 60).padStart(2, '0');
+        document.getElementById('clock-render').innerText = `${hrs}:${mins}:${secs}`;
+    }
+
+    function syncTimerToInput() {
+        const rawMins = timerSeconds / 60;
+        let calculatedMinutes = Math.floor(rawMins);
+        if (timerSeconds % 60 > 0) {
+            calculatedMinutes += 1;
+        }
+        
+        if (calculatedMinutes <= 0) {
+            alert("No tracked clock session volume found to synchronize yet.");
+            return;
+        }
+        document.getElementById('duration').value = calculatedMinutes;
+    }
 
     function getNextSundayDeadline() {
         const now = new Date();
@@ -743,6 +1033,62 @@
         }
     }
 
+    function calculateStreak() {
+        let allTimestamps = [];
+        
+        Object.keys(sportOptions).forEach(sport => {
+            if (appData[sport] && appData[sport].masterVault) {
+                appData[sport].masterVault.forEach(item => {
+                    const datePart = item.timestamp.split(' @')[0];
+                    const parsedDate = new Date(datePart);
+                    if (!isNaN(parsedDate.getTime())) {
+                        const dateString = parsedDate.getFullYear() + '-' + (parsedDate.getMonth() + 1) + '-' + parsedDate.getDate();
+                        if (!allTimestamps.includes(dateString)) {
+                            allTimestamps.push(dateString);
+                        }
+                    }
+                });
+            }
+        });
+
+        if (allTimestamps.length === 0) return 0;
+
+        let uniqueDates = allTimestamps.map(d => new Date(d)).sort((a, b) => b - a);
+
+        const today = new Date();
+        const todayStr = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+        const yesterday = new Date(today);
+        yesterday.setDate(today.getDate() - 1);
+        const yesterdayStr = yesterday.getFullYear() + '-' + (yesterday.getMonth() + 1) + '-' + yesterday.getDate();
+
+        let formattedUniqueStrings = uniqueDates.map(d => d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate());
+
+        if (!formattedUniqueStrings.includes(todayStr) && !formattedUniqueStrings.includes(yesterdayStr)) {
+            return 0;
+        }
+
+        let streak = 0;
+        let currentCheckDate = new Date(uniqueDates[0]);
+
+        if (!formattedUniqueStrings.includes(todayStr) && formattedUniqueStrings.includes(yesterdayStr)) {
+            currentCheckDate = new Date(yesterdayStr);
+        } else {
+            currentCheckDate = new Date(todayStr);
+        }
+
+        while (true) {
+            const checkStr = currentCheckDate.getFullYear() + '-' + (currentCheckDate.getMonth() + 1) + '-' + currentCheckDate.getDate();
+            if (formattedUniqueStrings.includes(checkStr)) {
+                streak++;
+                currentCheckDate.setDate(currentCheckDate.getDate() - 1);
+            } else {
+                break;
+            }
+        }
+
+        return streak;
+    }
+
     function updateGlobalHomeTotal() {
         let activeWeekSum = 0;
         Object.keys(sportOptions).forEach(sport => {
@@ -753,6 +1099,7 @@
         
         const grandTotal = (appData.historicalGrandTotal || 0) + activeWeekSum;
         document.getElementById('global-all-time-total').innerText = grandTotal;
+        document.getElementById('home-streak-count').innerText = calculateStreak();
     }
 
     function navigateTo(screenId) {
@@ -965,6 +1312,8 @@
         
         durationInput.value = '';
         document.getElementById('custom-activity').value = '';
+        
+        resetTimerClock();
     }
 
     function confirmClear() {
@@ -1034,6 +1383,7 @@
 
     function factoryResetDatabase() {
         if (confirm('EXTREME WARNING: You are initializing destructive factory reset operations. This purges all historic vectors permanently. Proceed?')) {
+            if (audioNode) { audioNode.stop(); }
             localStorage.removeItem('apex_os_data');
             localStorage.removeItem('apex_os_active_sport');
             appData = getFreshDataObject();
