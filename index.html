@@ -44,7 +44,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
 
         .dashboard-header h1 {
@@ -54,18 +54,44 @@
             letter-spacing: -0.5px;
         }
 
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Settings Gear Icon */
+        .settings-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 22px;
+            cursor: pointer;
+            transition: color 0.2s, transform 0.2s;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .settings-btn:hover {
+            color: var(--text-main);
+        }
+        .settings-btn:active {
+            transform: rotate(45deg);
+        }
+
         /* Streak Display Elements */
         .streak-widget {
             background: rgba(255, 75, 75, 0.08);
             border: 1px solid rgba(255, 75, 75, 0.25);
-            padding: 6px 14px;
+            padding: 6px 12px;
             border-radius: 20px;
             display: flex;
             align-items: center;
             gap: 6px;
         }
         .streak-number {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 800;
             color: var(--accent-red);
         }
@@ -73,6 +99,19 @@
             font-size: 11px;
             color: var(--text-muted);
             font-weight: 500;
+        }
+
+        /* Settings Dropdown Drawer */
+        .settings-drawer {
+            display: none;
+            background: #161622;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 0 20px 15px 20px;
+        }
+        .settings-drawer.open {
+            display: block;
         }
 
         /* Layout Architecture */
@@ -286,7 +325,7 @@
 
 <div class="app-container">
     
-    <!-- HEADER (Persistent Name across views) -->
+    <!-- HEADER -->
     <div class="header-padding">
         <div class="dashboard-header">
             <div>
@@ -294,13 +333,27 @@
                 <p style="color: var(--text-muted); margin: 4px 0 0 0;" id="app-subtitle">Dashboard View</p>
             </div>
             
-            <!-- Home-Only Streak Element (Managed explicitly by JS) -->
-            <div class="streak-widget" id="home-streak-badge">
-                <span style="font-size:14px">🔥</span>
-                <span id="streak-count" class="streak-number">5</span>
-                <span class="streak-label">Day Streak</span>
+            <div class="header-right">
+                <!-- Home-Only Streak Element -->
+                <div class="streak-widget" id="home-streak-badge">
+                    <span style="font-size:14px">🔥</span>
+                    <span id="streak-count" class="streak-number">5</span>
+                </div>
+
+                <!-- Settings Gear Icon -->
+                <button class="settings-btn" id="gear-button" onclick="toggleSettingsDrawer()">⚙️</button>
             </div>
         </div>
+    </div>
+
+    <!-- Collapsible Settings Panel (For Switching Sports) -->
+    <div id="settings-drawer" class="settings-drawer">
+        <label style="font-size: 12px; color: var(--text-muted); font-weight: 600; margin-bottom: 8px; display: block;">SWITCH SPORT PROFILE</label>
+        <select id="sport-select" onchange="renderSportProfile()" style="margin-bottom: 0;">
+            <option value="Soccer">Soccer Profile</option>
+            <option value="Cardio">Cardio & Run</option>
+            <option value="Strength">Strength Engine</option>
+        </select>
     </div>
 
     <!-- TAB 1: HOME PAGE -->
@@ -309,12 +362,6 @@
         <div class="dashboard-card">
             <h3 class="card-title">Log Training Session</h3>
             
-            <select id="sport-select" onchange="renderSportProfile()">
-                <option value="Soccer">Soccer Profile</option>
-                <option value="Cardio">Cardio & Run</option>
-                <option value="Strength">Strength Engine</option>
-            </select>
-
             <div class="chips-grid" id="chips-container"></div>
 
             <div id="custom-activity-wrapper" style="display: none;">
@@ -407,7 +454,7 @@
     let currentTrackIndex = 0;
 
     const playlist = [
-        { title: "Ransom", artist: "Apex Playlist", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" }, // Live test streams
+        { title: "Ransom", artist: "Apex Playlist", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" }, 
         { title: "The Show Goes On", artist: "Apex Playlist", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
         { title: "Remember the Name", artist: "Apex Playlist", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" }
     ];
@@ -426,25 +473,35 @@
         loadTrack(currentTrackIndex);
     });
 
+    /* --- TOGGLE SETTINGS DRAWER (SPORT SWITCHER) --- */
+    function toggleSettingsDrawer() {
+        const drawer = document.getElementById('settings-drawer');
+        drawer.classList.toggle('open');
+    }
+
     /* --- APP NAVIGATION ARCHITECTURE --- */
     function switchTab(targetTab) {
         document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active-view'));
         document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active-nav'));
         
         const streakBadge = document.getElementById('home-streak-badge');
+        const gearButton = document.getElementById('gear-button');
+        const drawer = document.getElementById('settings-drawer');
         const subtitle = document.getElementById('app-subtitle');
 
         if (targetTab === 'home') {
-            document.getElementById('view-home').classAll = "tab-view active-view"; // fallback safe formatting
             document.getElementById('view-home').classList.add('active-view');
             document.getElementById('nav-btn-home').classList.add('active-nav');
-            streakBadge.style.display = 'flex'; // Keep streak counter visible on Home page only
+            streakBadge.style.display = 'flex'; 
+            gearButton.style.display = 'block';
             subtitle.innerText = "Dashboard View";
-            renderSportProfile(); // redraw chart layout constraints
+            renderSportProfile(); 
         } else if (targetTab === 'trophies') {
             document.getElementById('view-trophies').classList.add('active-view');
             document.getElementById('nav-btn-trophies').classList.add('active-nav');
-            streakBadge.style.display = 'none'; // Completely hidden on Trophy Room Tab
+            streakBadge.style.display = 'none'; 
+            gearButton.style.display = 'none';
+            drawer.classList.remove('open'); // Auto-collapse if switching away
             subtitle.innerText = "Milestone Achievements";
             renderTrophies();
         }
@@ -517,6 +574,9 @@
 
         appData[currentSport].total += duration;
         durationInput.value = '';
+        
+        // Auto-close settings drawer on log submit to keep the UI clean
+        document.getElementById('settings-drawer').classList.remove('open');
         
         renderSportProfile();
     }
@@ -617,7 +677,6 @@
         if (isPlaying) audioEl.play().catch(() => {});
     }
 
-    // New Absolute Control Button logic for explicit volume management
     function toggleMute() {
         const muteBtn = document.getElementById('mute-btn');
         if (isMuted) {
