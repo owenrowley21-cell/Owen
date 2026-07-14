@@ -286,52 +286,34 @@
         .timer-btn.stop { background: rgba(239, 68, 68, 0.15); color: var(--danger); border-color: rgba(239, 68, 68, 0.3); }
         .timer-btn.sync { background: rgba(79, 70, 229, 0.2); color: #a5b4fc; border-color: var(--accent); }
 
-        /* MUSIC DECK MODULE */
+        /* MUSIC DECK MODULE - UPDATED */
         .music-module {
-            background: linear-gradient(135deg, #111827 0%, #2e1065 100%);
-            border: 1px solid rgba(139, 92, 246, 0.25);
-            padding: 16px;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            padding: 20px;
             border-radius: 16px;
             margin-bottom: 24px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 0 15px var(--music-glow);
-        }
-
-        .music-info {
-            text-align: left;
-        }
-
-        .music-title {
-            font-size: 14px;
-            font-weight: 800;
-            color: #ffffff;
-            margin-bottom: 2px;
-        }
-
-        .music-tag {
-            font-size: 11px;
-            color: #c084fc;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            justify-content: center;
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.1);
         }
 
         .music-toggle-btn {
             background: var(--music-purple);
             color: #ffffff;
             border: none;
-            padding: 10px 18px;
-            font-size: 13px;
+            padding: 12px 40px;
+            font-size: 16px;
             font-weight: 700;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.2s ease;
-            box-shadow: 0 4px 10px rgba(139, 92, 246, 0.3);
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+            width: 100%;
         }
         .music-toggle-btn:hover {
-            transform: scale(1.03);
+            transform: scale(1.02);
         }
         .music-toggle-btn.muted {
             background: rgba(255, 255, 255, 0.08);
@@ -702,10 +684,6 @@
 
         <!-- APEX RADIO DECK MODULE -->
         <div class="music-module">
-            <div class="music-info">
-                <div class="music-tag">⚡ Apex Radio Active</div>
-                <div class="music-title" id="track-name-display">Training Station (Hype & Clean)</div>
-            </div>
             <button class="music-toggle-btn muted" id="music-action-btn" onclick="toggleRadioPlayback()">Unmute</button>
         </div>
 
@@ -799,13 +777,6 @@
         'Track & Field': ['Endurance Runs', 'Sprint Intervals', 'Core Work / Stability', 'Form Mechanics', 'Strength Training', 'Flexibility / Stretching', 'Explosive Starts', 'Agility Drills', 'Other']
     };
 
-    // Clean, Hyped Anthem Tracks Array
-    const hypePlaylist = [
-        { name: "Fort Minor - Remember the Name (Clean)", url: "https://actions.google.com/sounds/v1/sports/stadium_cheer.ogg" }, // Audio placeholders that loop smoothly
-        { name: "Lil Tecca - Ransom (Clean Instrumentals)", url: "https://actions.google.com/sounds/v1/science_fiction/ambient_space_machine.ogg" },
-        { name: "Lupe Fiasco - The Show Goes On (Clean Edit)", url: "https://actions.google.com/sounds/v1/sports/gymnasium.ogg" }
-    ];
-
     let appData;
     let selectedActivities = [];
     let viewingHistory = false;
@@ -816,7 +787,6 @@
     let isTimerRunning = false;
 
     // Audio State Engine
-    let currentTrackIndex = 0;
     let audioContext = null;
     let audioNode = null;
     let isMusicPlaying = false;
@@ -846,7 +816,6 @@
         updateGlobalHomeTotal();
         renderSportProfile();
         buildVaultFolders();
-        initSynthTrackMeta();
     };
 
     function getFreshDataObject() {
@@ -865,10 +834,6 @@
     }
 
     /* BACKGROUND AUDIO HANDLING LOGIC */
-    function initSynthTrackMeta() {
-        document.getElementById('track-name-display').innerText = hypePlaylist[currentTrackIndex].name;
-    }
-
     function toggleRadioPlayback() {
         const btn = document.getElementById('music-action-btn');
         
@@ -877,7 +842,6 @@
         }
 
         if (isMusicPlaying) {
-            // Mute / Stop
             if (audioNode) {
                 audioNode.stop();
                 audioNode = null;
@@ -886,40 +850,30 @@
             btn.innerText = "Unmute";
             btn.classList.add('muted');
         } else {
-            // Unmute / Play Hype Station Loop
             isMusicPlaying = true;
             btn.innerText = "Mute";
             btn.classList.remove('muted');
-            playCurrentHypeTrack();
+            playContinuousHypeLoop();
         }
     }
 
-    function playCurrentHypeTrack() {
+    function playContinuousHypeLoop() {
         if (!isMusicPlaying) return;
 
-        // Build continuous high-energy synth rhythms natively to guarantee clean tracks play immediately without external network breaks
         if (audioNode) {
             audioNode.stop();
         }
 
-        document.getElementById('track-name-display').innerText = hypePlaylist[currentTrackIndex].name;
-
-        // Create high-energy operational synthesizer beats
         const osc = audioContext.createOscillator();
         const gain = audioContext.createGain();
         
-        // Hype station chord sequencing
-        const chords = [110, 130, 146, 165]; 
-        const baseFreq = chords[currentTrackIndex % chords.length];
-        
         osc.type = 'sawtooth'; 
-        osc.frequency.setValueAtTime(baseFreq, audioContext.currentTime);
+        osc.frequency.setValueAtTime(110, audioContext.currentTime);
         
-        // Dynamic performance beat pacing
-        osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.5, audioContext.currentTime + 3);
-        osc.frequency.exponentialRampToValueAtTime(baseFreq, audioContext.currentTime + 6);
+        osc.frequency.exponentialRampToValueAtTime(165, audioContext.currentTime + 3);
+        osc.frequency.exponentialRampToValueAtTime(110, audioContext.currentTime + 6);
 
-        gain.gain.setValueAtTime(0.04, audioContext.currentTime); // Perfect training background volume
+        gain.gain.setValueAtTime(0.04, audioContext.currentTime);
         gain.gain.linearRampToValueAtTime(0.01, audioContext.currentTime + 5.8);
 
         osc.connect(gain);
@@ -928,12 +882,8 @@
         audioNode = osc;
         osc.start();
 
-        // Track rotation vector loop
         osc.onended = () => {
-            if (isMusicPlaying) {
-                currentTrackIndex = (currentTrackIndex + 1) % hypePlaylist.length;
-                playCurrentHypeTrack();
-            }
+            if (isMusicPlaying) playContinuousHypeLoop();
         };
     }
 
