@@ -1,62 +1,123 @@
-<!-- Inside the WORKSPACE SCREEN -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apex Tracker | Performance OS</title>
+    <style>
+        :root { --bg-main: #0b0f19; --bg-card: #161b26; --bg-input: #1f2635; --text-main: #ffffff; --text-muted: #94a3b8; --accent: #4f46e5; --success: #10b981; --danger: #ef4444; }
+        body { font-family: sans-serif; background-color: var(--bg-main); color: var(--text-main); max-width: 540px; margin: 0 auto; padding: 20px; }
+        .screen { display: none; } .screen.active { display: block; }
+        .dashboard { background: var(--bg-card); padding: 24px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.05); }
+        
+        /* New Tab Styles */
+        .tabs-container { display: flex; gap: 8px; margin-bottom: 24px; background: rgba(255,255,255,0.03); padding: 6px; border-radius: 16px; }
+        .tab-btn { flex: 1; padding: 10px; border: none; background: transparent; color: var(--text-muted); font-weight: 600; cursor: pointer; border-radius: 10px; font-size: 13px; }
+        .tab-btn.active { background: var(--accent); color: white; }
+        .tab-content { display: none; } .tab-content.active { display: block; }
 
-<!-- TAB: GOALS & PROGRESS -->
-<div id="tab-goals" class="tab-content">
-    <div class="dashboard">
-        <h3>Weekly Goal Progress</h3>
-        <div id="goal-progress-container">
-            <p style="font-size: 14px; color: var(--text-muted);">Set a target to see progress.</p>
-            <div style="background:#1f2635; height:20px; border-radius:10px; overflow:hidden; margin:10px 0;">
-                <div id="goal-bar" style="height:100%; width:0%; background:var(--accent); transition: width 0.5s;"></div>
-            </div>
-            <p id="goal-text">0 / 500 minutes</p>
-        </div>
-    </div>
-</div>
+        /* Your Original Styles */
+        .log-item { background: var(--bg-input); padding: 16px; border-radius: 14px; margin-bottom: 12px; display: flex; justify-content: space-between; }
+        .chart-container { display: flex; justify-content: space-between; align-items: flex-end; height: 100px; padding: 10px 0; }
+        .bar-wrapper { display: flex; flex-direction: column; align-items: center; width: 30px; }
+        .chart-bar { width: 100%; background: var(--accent); border-radius: 4px; height: 0%; transition: height 0.3s; }
+        .folder-container { margin-bottom: 10px; background: var(--bg-input); padding: 10px; border-radius: 8px; }
+    </style>
+</head>
+<body>
 
-<!-- TAB: TROPHY'S -->
-<div id="tab-trophies" class="tab-content">
+<div id="screen-tracker" class="screen active">
     <div class="dashboard">
-        <h3>Achievements</h3>
-        <div id="trophies-container" style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-            <!-- Trophy Cards -->
-            <div id="trophy-beginner" class="log-item" style="opacity: 0.3;">
-                <span>🥉 Beginner</span>
-            </div>
-            <div id="trophy-pro" class="log-item" style="opacity: 0.3;">
-                <span>🥈 Pro</span>
-            </div>
-            <div id="trophy-legend" class="log-item" style="opacity: 0.3;">
-                <span>🥇 Legend</span>
-            </div>
+        <div class="tabs-container">
+            <button class="tab-btn active" onclick="switchTab(event, 'tab-record')">Recording</button>
+            <button class="tab-btn" onclick="switchTab(event, 'tab-goals')">Goals & Progress</button>
+            <button class="tab-btn" onclick="switchTab(event, 'tab-trophies')">Trophy’s</button>
         </div>
+
+        <div id="tab-record" class="tab-content active">
+            <select id="sport-select" onchange="switchSport()"></select>
+            <h2 id="active-sport-title"></h2>
+            <div id="weekly-total"></div>
+            
+            <div class="chart-container">
+                <div class="bar-wrapper"><div id="bar-Mon" class="chart-bar"></div><span id="tip-Mon">0m</span></div>
+                <div class="bar-wrapper"><div id="bar-Tue" class="chart-bar"></div><span id="tip-Tue">0m</span></div>
+                <div class="bar-wrapper"><div id="bar-Wed" class="chart-bar"></div><span id="tip-Wed">0m</span></div>
+                <div class="bar-wrapper"><div id="bar-Thu" class="chart-bar"></div><span id="tip-Thu">0m</span></div>
+                <div class="bar-wrapper"><div id="bar-Fri" class="chart-bar"></div><span id="tip-Fri">0m</span></div>
+                <div class="bar-wrapper"><div id="bar-Sat" class="chart-bar"></div><span id="tip-Sat">0m</span></div>
+                <div class="bar-wrapper"><div id="bar-Sun" class="chart-bar"></div><span id="tip-Sun">0m</span></div>
+            </div>
+
+            <input type="text" id="day" placeholder="Day (Mon-Sun)">
+            <input type="number" id="duration" placeholder="Duration (min)">
+            <button onclick="logSession()">Log Session</button>
+            <div id="logs-container"></div>
+            <div id="history-archive-section" style="display:none;"><div id="history-weeks-container"></div></div>
+            <div id="vault-folders-wrapper"></div>
+            <button onclick="factoryResetDatabase()">Reset</button>
+        </div>
+
+        <div id="tab-goals" class="tab-content"><h3>Goals</h3></div>
+        <div id="tab-trophies" class="tab-content"><h3>Trophies</h3></div>
     </div>
 </div>
 
 <script>
-    // --- ADD THIS LOGIC TO YOUR SCRIPT SECTION ---
+    const sportOptions = { "Baseball": {}, "Basketball": {} };
+    let appData = JSON.parse(localStorage.getItem('apex_os_data')) || {
+        "Baseball": { total: 0, logs: [], masterVault: [], history: [] },
+        "Basketball": { total: 0, logs: [], masterVault: [], history: [] }
+    };
 
-    function updateGoalsAndTrophies() {
+    function switchTab(evt, tabId) {
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        evt.currentTarget.classList.add('active');
+    }
+
+    // --- YOUR EXACT FUNCTIONS ---
+    function logSession() {
         const sport = document.getElementById('sport-select').value;
-        const total = appData[sport].total;
-        
-        // Update Goal Bar (Assuming 500 min target)
-        const goal = 500;
-        const percentage = Math.min((total / goal) * 100, 100);
-        document.getElementById('goal-bar').style.width = `${percentage}%`;
-        document.getElementById('goal-text').innerText = `${total} / ${goal} minutes`;
-
-        // Unlock Trophies
-        if (total >= 100) document.getElementById('trophy-beginner').style.opacity = "1";
-        if (total >= 500) document.getElementById('trophy-pro').style.opacity = "1";
-        if (total >= 1000) document.getElementById('trophy-legend').style.opacity = "1";
+        const day = document.getElementById('day').value;
+        const duration = parseInt(document.getElementById('duration').value);
+        if (!duration || duration <= 0) { alert("Please enter a valid duration."); return; }
+        const timestamp = new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+        const entry = { day, duration, timestamp };
+        appData[sport].total += duration;
+        appData[sport].logs.push(entry);
+        appData[sport].masterVault.push(entry);
+        saveToLocalStorage();
+        renderSportProfile();
+        document.getElementById('duration').value = '';
     }
 
-    // Modify your existing renderSportProfile to trigger the new update
     function renderSportProfile() {
-        // ... (Keep your existing rendering logic)
-        
-        // Add this line at the end of your renderSportProfile function:
-        updateGoalsAndTrophies();
+        const sport = document.getElementById('sport-select').value;
+        document.getElementById('active-sport-title').innerText = sport;
+        document.getElementById('weekly-total').innerText = appData[sport].total;
+        const container = document.getElementById('logs-container');
+        container.innerHTML = appData[sport].logs.map(log => `
+            <div class="log-item"><div><div class="log-day">${log.day}</div><div class="log-time-stamp">${log.timestamp}</div></div><div class="log-time">${log.duration}m</div></div>
+        `).join('');
+        ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].forEach(day => {
+            const dayLogs = appData[sport].logs.filter(l => l.day.startsWith(day));
+            const dayTotal = dayLogs.reduce((sum, l) => sum + l.duration, 0);
+            const bar = document.getElementById(`bar-${day}`);
+            const tip = document.getElementById(`tip-${day}`);
+            if(bar) { bar.style.height = `${Math.min(dayTotal, 100)}%`; tip.innerText = `${dayTotal}m`; }
+        });
     }
+
+    function saveToLocalStorage() { localStorage.setItem('apex_os_data', JSON.stringify(appData)); }
+    function switchSport() { renderSportProfile(); }
+    function updateGlobalHomeTotal() {} 
+    function factoryResetDatabase() { if(confirm("Reset?")) { localStorage.clear(); location.reload(); } }
+    // --- END OF YOUR FUNCTIONS ---
+
+    Object.keys(sportOptions).forEach(s => document.getElementById('sport-select').innerHTML += `<option value="${s}">${s}</option>`);
+    renderSportProfile();
 </script>
+</body>
+</html>
