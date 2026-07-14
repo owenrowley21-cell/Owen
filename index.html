@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Apex Tracker</title>
+    
+    <!-- Mobile Web App & High-Contrast Colorful App Icon Headers -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 180 180%22><defs><linearGradient id=%22g%22 x1=%220%25%22 y1=%220%25%22 x2=%22100%25%22 y2=%22100%25%22><stop offset=%220%25%22 stop-color=%22%234f46e5%22/><stop offset=%2250%25%22 stop-color=%22%2306b6d4%22/><stop offset=%22100%25%22 stop-color=%22%2310b981%22/></linearGradient><filter id=%22glow%22><feGaussianBlur stdDeviation=%225%22 result=%22coloredBlur%22/><feMerge><feMergeNode in=%22coloredBlur%22/><feMergeNode in=%22SourceGraphic%22/></feMerge></filter></defs><rect width=%22180%22 height=%22180%22 rx=%2240%22 fill=%22%230b0f19%22/><rect width=%22172%22 height=%22172%22 x=%224%22 y=%224%22 rx=%2236%22 fill=%22none%22 stroke=%22url(%23g)%22 stroke-width=%224%22 opacity=%220.8%22/><path d=%22M90 35 L135 130 L110 130 L90 85 L70 130 L45 130 Z%22 fill=%22url(%23g)%22 filter=%22url(%23glow)%22/><path d=%22M73 95 L107 95%22 stroke=%22%23ffffff%22 stroke-width=%225%22 stroke-linecap=%22round%22/></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 180 180%22><defs><linearGradient id=%22g%22 x1=%220%25%22 y1=%220%25%22 x2=%22100%25%22 y2=%22100%25%22><stop offset=%220%25%22 stop-color=%22%234f46e5%22/><stop offset=%2250%25%22 stop-color=%22%2306b6d4%22/><stop offset=%22100%25%22 stop-color=%22%2310b981%22/></linearGradient></defs><rect width=%22180%22 height=%22180%22 rx=%2240%22 fill=%22%230b0f19%22/><path d=%22M90 35 L135 130 L110 130 L90 85 L70 130 L45 130 Z%22 fill=%22url(%23g)%22/><path d=%22M73 95 L107 95%22 stroke=%22%23ffffff%22 stroke-width=%225%22 stroke-linecap=%22round%22/></svg>">
+
     <style>
         :root {
             --bg-main: #0b0f19;
@@ -15,8 +22,6 @@
             --accent-glow: rgba(79, 70, 229, 0.4);
             --success: #10b981;
             --danger: #ef4444;
-            --gold: #f59e0b;
-            --gold-glow: rgba(245, 158, 11, 0.3);
         }
 
         body {
@@ -107,22 +112,6 @@
             letter-spacing: 2px;
             font-weight: 700;
             margin-bottom: 40px;
-        }
-
-        /* Points Pill Widget */
-        .points-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(245, 158, 11, 0.1);
-            border: 1px solid rgba(245, 158, 11, 0.2);
-            color: var(--gold);
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 13px;
-            margin-bottom: 24px;
-            box-shadow: 0 4px 12px var(--gold-glow);
         }
 
         .global-stat-box {
@@ -218,7 +207,7 @@
             border: 1px solid rgba(79, 70, 229, 0.3);
             padding: 20px;
             border-radius: 16px;
-            margin-bottom: 16px;
+            margin-bottom: 24px;
             text-align: center;
             box-shadow: 0 0 20px var(--accent-glow);
         }
@@ -236,43 +225,6 @@
             font-size: 40px;
             font-weight: 800;
             color: var(--text-main);
-        }
-
-        /* REWARDS SECTION */
-        .rewards-section {
-            background: linear-gradient(135deg, #1e150a 0%, #110f0a 100%);
-            border: 1px solid rgba(245, 158, 11, 0.2);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .rewards-text h4 {
-            margin: 0 0 2px 0;
-            font-size: 14px;
-            color: #ffffff;
-        }
-        .rewards-text p {
-            margin: 0;
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-        .ad-btn {
-            background: var(--gold);
-            color: #000000;
-            border: none;
-            padding: 10px 14px;
-            font-weight: 700;
-            font-size: 12px;
-            border-radius: 10px;
-            cursor: pointer;
-            box-shadow: 0 4px 12px var(--gold-glow);
-            transition: transform 0.2s ease;
-        }
-        .ad-btn:hover {
-            transform: scale(1.03);
         }
 
         /* CHART STYLE */
@@ -577,11 +529,6 @@
 
     <div class="home-title">APEX TRACKER</div>
     <div class="home-subtitle">Performance Operating System</div>
-    
-    <!-- Visual Points Counter -->
-    <div class="points-badge">
-        🪙 <span id="home-points-count">0</span> Apex Tokens
-    </div>
 
     <div class="global-stat-box">
         <div class="total-label" style="margin-bottom: 12px;">All-Time Total Volume</div>
@@ -618,15 +565,6 @@
         <div class="total-box">
             <div class="total-label"><span id="active-sport-title">Baseball</span> Current Week</div>
             <div class="total-number"><span id="weekly-total">0</span> <span style="font-size: 20px; font-weight: 500; color: var(--text-muted);">mins</span></div>
-        </div>
-
-        <!-- REWARDS VAULT ZONE -->
-        <div class="rewards-section">
-            <div class="rewards-text">
-                <h4>Rewards Vault</h4>
-                <p>Balance: <strong style="color: var(--gold);"><span id="workspace-points-count">0</span> Tokens</strong></p>
-            </div>
-            <button class="ad-btn" onclick="simulateAdWatch()">📺 Watch Ad (+50)</button>
         </div>
 
         <div class="chart-section">
@@ -725,7 +663,6 @@
         return {
             nextResetTimestamp: 0, 
             historicalGrandTotal: 0, 
-            tokensBalance: 0, // <--- New state parameter to track ad rewards points safely
             Baseball: { total: 0, logs: [], history: [], masterVault: [] },
             Basketball: { total: 0, logs: [], history: [], masterVault: [] },
             Football: { total: 0, logs: [], history: [], masterVault: [] },
@@ -745,7 +682,6 @@
         const savedData = localStorage.getItem('apex_os_data');
         if (savedData) {
             appData = JSON.parse(savedData);
-            if (appData.tokensBalance === undefined) appData.tokensBalance = 0;
             Object.keys(sportOptions).forEach(sport => {
                 if(!appData[sport]) {
                     appData[sport] = { total: 0, logs: [], history: [], masterVault: [] };
@@ -764,7 +700,6 @@
 
         checkAndAutoArchiveWeek();
         updateGlobalHomeTotal();
-        updatePointsDisplay();
         renderSportProfile();
         buildVaultFolders();
     };
@@ -827,29 +762,11 @@
         document.getElementById('global-all-time-total').innerText = grandTotal;
     }
 
-    function updatePointsDisplay() {
-        const currentBalance = appData.tokensBalance || 0;
-        document.getElementById('home-points-count').innerText = currentBalance;
-        document.getElementById('workspace-points-count').innerText = currentBalance;
-    }
-
-    function simulateAdWatch() {
-        // This simulates receiving a callback from an ad network (like Google AdMob or Unity Ads)
-        alert("Simulating Ad Playback... (In your live app, an ad network video container would present full-screen here).");
-        
-        appData.tokensBalance += 50;
-        saveToLocalStorage();
-        updatePointsDisplay();
-        
-        alert("Success! +50 Apex Tokens have been safely added to your workspace vault.");
-    }
-
     function navigateTo(screenId) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(screenId).classList.add('active');
         if(screenId === 'screen-home') {
             updateGlobalHomeTotal();
-            updatePointsDisplay();
         }
         if(screenId === 'screen-settings') {
             buildVaultFolders();
@@ -1113,7 +1030,6 @@
             renderSportProfile();
             buildVaultFolders();
             updateGlobalHomeTotal();
-            updatePointsDisplay();
             navigateTo('screen-home');
             alert('Apex Storage Ecosystem reset completed successfully.');
         }
@@ -1125,4 +1041,3 @@
 </script>
 </body>
 </html>
-        
