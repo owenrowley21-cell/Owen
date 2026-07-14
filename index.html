@@ -111,7 +111,29 @@
             text-transform: uppercase;
             letter-spacing: 2px;
             font-weight: 700;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
+        }
+
+        /* Streak Display Badge */
+        .streak-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            color: #f59e0b;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 800;
+            margin-bottom: 24px;
+            text-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
+            animation: pulseGlow 2s infinite ease-in-out;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 rgba(245, 158, 11, 0); }
+            50% { transform: scale(1.03); box-shadow: 0 0 12px rgba(245, 158, 11, 0.15); }
         }
 
         .global-stat-box {
@@ -119,7 +141,7 @@
             border: 1px solid rgba(255, 255, 255, 0.05);
             padding: 30px 20px;
             border-radius: 24px;
-            margin-bottom: 60px;
+            margin-bottom: 40px;
             backdrop-filter: blur(10px);
         }
 
@@ -210,6 +232,7 @@
             margin-bottom: 24px;
             text-align: center;
             box-shadow: 0 0 20px var(--accent-glow);
+            position: relative;
         }
 
         .total-label {
@@ -225,6 +248,60 @@
             font-size: 40px;
             font-weight: 800;
             color: var(--text-main);
+        }
+
+        /* STOPWATCH TIMER WIDGET CSS */
+        .timer-widget {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        .timer-display {
+            font-size: 32px;
+            font-weight: 800;
+            font-family: monospace;
+            color: #ffffff;
+            letter-spacing: 1px;
+            margin: 8px 0 16px 0;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+        }
+        .timer-controls {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+        .timer-btn {
+            background: var(--bg-input);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-main);
+            padding: 10px 16px;
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .timer-btn.start {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border-color: rgba(16, 185, 129, 0.2);
+        }
+        .timer-btn.pause {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+            border-color: rgba(245, 158, 11, 0.2);
+        }
+        .timer-btn.apply {
+            background: var(--accent);
+            color: #ffffff;
+            border: none;
+            box-shadow: 0 4px 10px var(--accent-glow);
+        }
+        .timer-btn:hover {
+            transform: translateY(-1px);
         }
 
         /* CHART STYLE */
@@ -361,6 +438,61 @@
             color: #a5b4fc;
         }
 
+        /* NEW: RPE INTENSITY GRID */
+        .rpe-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+        }
+
+        .rpe-chip {
+            background: var(--bg-input);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 10px 4px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .rpe-num {
+            font-size: 16px;
+            font-weight: 800;
+            display: block;
+        }
+        .rpe-label {
+            font-size: 9px;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        /* Active styling states for each discrete RPE level */
+        .rpe-chip[data-rpe="1-2"]:hover, .rpe-chip[data-rpe="1-2"].active {
+            background: rgba(14, 165, 233, 0.15);
+            border-color: #0ea5e9;
+            color: #38bdf8;
+        }
+        .rpe-chip[data-rpe="3-4"]:hover, .rpe-chip[data-rpe="3-4"].active {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: var(--success);
+            color: #34d399;
+        }
+        .rpe-chip[data-rpe="5-6"]:hover, .rpe-chip[data-rpe="5-6"].active {
+            background: rgba(245, 158, 11, 0.15);
+            border-color: #f59e0b;
+            color: #fbbf24;
+        }
+        .rpe-chip[data-rpe="7-8"]:hover, .rpe-chip[data-rpe="7-8"].active {
+            background: rgba(249, 115, 22, 0.15);
+            border-color: #f97316;
+            color: #fb923c;
+        }
+        .rpe-chip[data-rpe="9-10"]:hover, .rpe-chip[data-rpe="9-10"].active {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: var(--danger);
+            color: #f87171;
+        }
+
         #custom-activity-wrapper {
             margin-top: 12px;
         }
@@ -418,9 +550,16 @@
         }
 
         .log-day { font-weight: 700; font-size: 15px; }
-        .log-activity { color: var(--text-muted); font-size: 13px; max-width: 320px; }
-        .log-time-stamp { font-size: 11px; color: #64748b; margin-top: 4px; }
+        .log-activity { color: var(--text-muted); font-size: 13px; max-width: 300px; margin-top: 2px; }
+        .log-time-stamp { font-size: 11px; color: #64748b; margin-top: 6px; }
         
+        .log-stats {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 6px;
+        }
+
         .log-time {
             font-weight: 700;
             color: var(--success);
@@ -429,6 +568,19 @@
             border-radius: 20px;
             font-size: 14px;
         }
+
+        .log-rpe-tag {
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+        .rpe-tag-1-2 { background: rgba(14, 165, 233, 0.15); color: #38bdf8; }
+        .rpe-tag-3-4 { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+        .rpe-tag-5-6 { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+        .rpe-tag-7-8 { background: rgba(249, 115, 22, 0.15); color: #fb923c; }
+        .rpe-tag-9-10 { background: rgba(239, 68, 68, 0.15); color: #f87171; }
 
         .history-card {
             background: #1e293b;
@@ -530,6 +682,11 @@
     <div class="home-title">APEX TRACKER</div>
     <div class="home-subtitle">Performance Operating System</div>
 
+    <!-- NEW: Active Training Streak Badge -->
+    <div class="streak-badge" id="home-streak-badge">
+        🔥 <span id="streak-count">0</span> Day Streak
+    </div>
+
     <div class="global-stat-box">
         <div class="total-label" style="margin-bottom: 12px;">All-Time Total Volume</div>
         <div class="global-number"><span id="global-all-time-total">0</span></div>
@@ -544,7 +701,10 @@
 <div id="screen-tracker" class="screen">
     <div class="dashboard">
         <div class="nav-header">
-            <h1>Workspace</h1>
+            <div>
+                <h1 style="display:inline-block; vertical-align:middle;">Workspace</h1>
+                <span id="tracker-streak-badge" style="display:inline-block; margin-left:8px; font-size:12px; font-weight:800; color:#f59e0b; background:rgba(245, 158, 11, 0.1); padding:3px 8px; border-radius:12px; vertical-align:middle;">🔥 0 d</span>
+            </div>
             <button class="back-btn" onclick="navigateTo('screen-home')">← Home</button>
         </div>
         
@@ -565,6 +725,17 @@
         <div class="total-box">
             <div class="total-label"><span id="active-sport-title">Baseball</span> Current Week</div>
             <div class="total-number"><span id="weekly-total">0</span> <span style="font-size: 20px; font-weight: 500; color: var(--text-muted);">mins</span></div>
+        </div>
+
+        <!-- LIVE STOPWATCH CONTAINER -->
+        <div class="timer-widget">
+            <label style="margin-bottom: 2px;">⚡ Live Stopwatch Tracker</label>
+            <div class="timer-display" id="stopwatch-display">00:00:00</div>
+            <div class="timer-controls">
+                <button class="timer-btn start" id="timer-toggle-btn" onclick="toggleStopwatch()">Start</button>
+                <button class="timer-btn" onclick="resetStopwatch()">Reset</button>
+                <button class="timer-btn apply" onclick="applyStopwatchTime()">Apply to Input</button>
+            </div>
         </div>
 
         <div class="chart-section">
@@ -603,9 +774,36 @@
             </div>
         </div>
 
+        <!-- NEW: RPE INTENSITY SLIDER GRID -->
+        <div class="form-group">
+            <label>Rate of Perceived Exertion (RPE)</label>
+            <div class="rpe-grid" id="rpe-container">
+                <div class="rpe-chip" data-rpe="1-2" onclick="selectRPE('1-2')">
+                    <span class="rpe-num">1-2</span>
+                    <span class="rpe-label">Easy</span>
+                </div>
+                <div class="rpe-chip" data-rpe="3-4" onclick="selectRPE('3-4')">
+                    <span class="rpe-num">3-4</span>
+                    <span class="rpe-label">Mod</span>
+                </div>
+                <div class="rpe-chip" data-rpe="5-6" onclick="selectRPE('5-6')">
+                    <span class="rpe-num">5-6</span>
+                    <span class="rpe-label">Hard</span>
+                </div>
+                <div class="rpe-chip" data-rpe="7-8" onclick="selectRPE('7-8')">
+                    <span class="rpe-num">7-8</span>
+                    <span class="rpe-label">V. Hard</span>
+                </div>
+                <div class="rpe-chip" data-rpe="9-10" onclick="selectRPE('9-10')">
+                    <span class="rpe-num">9-10</span>
+                    <span class="rpe-label">Max</span>
+                </div>
+            </div>
+        </div>
+
         <div class="form-group">
             <label for="duration">Duration (Minutes)</label>
-            <input type="number" id="duration" placeholder="Enter minutes (e.g., 60)" min="1">
+            <input type="number" id="duration" placeholder="Enter minutes manually or use stopwatch above" min="1">
         </div>
 
         <div class="btn-container">
@@ -658,30 +856,23 @@
     };
 
     let appData;
-
-    function getFreshDataObject() {
-        return {
-            nextResetTimestamp: 0, 
-            historicalGrandTotal: 0, 
-            Baseball: { total: 0, logs: [], history: [], masterVault: [] },
-            Basketball: { total: 0, logs: [], history: [], masterVault: [] },
-            Football: { total: 0, logs: [], history: [], masterVault: [] },
-            Golf: { total: 0, logs: [], history: [], masterVault: [] },
-            Soccer: { total: 0, logs: [], history: [], masterVault: [] },
-            Swimming: { total: 0, logs: [], history: [], masterVault: [] },
-            Tennis: { total: 0, logs: [], history: [], masterVault: [] },
-            'Track & Field': { total: 0, logs: [], history: [], masterVault: [] }
-        };
-    }
-
     let selectedActivities = [];
+    let selectedRPE = "3-4"; // Default to moderate
     let viewingHistory = false;
+
+    // Stopwatch variables
+    let stopwatchInterval = null;
+    let stopwatchElapsedSeconds = 0;
+    let isStopwatchRunning = false;
 
     window.onload = function() {
         appData = getFreshDataObject();
         const savedData = localStorage.getItem('apex_os_data');
         if (savedData) {
             appData = JSON.parse(savedData);
+            // Dynamic check to clean and guarantee structures exist
+            if (!appData.streakCount) appData.streakCount = 0;
+            if (!appData.lastActiveDate) appData.lastActiveDate = "";
             Object.keys(sportOptions).forEach(sport => {
                 if(!appData[sport]) {
                     appData[sport] = { total: 0, logs: [], history: [], masterVault: [] };
@@ -699,10 +890,157 @@
         }
 
         checkAndAutoArchiveWeek();
+        updateStreakEngine();
         updateGlobalHomeTotal();
         renderSportProfile();
         buildVaultFolders();
+        selectRPE(selectedRPE);
     };
+
+    function getFreshDataObject() {
+        return {
+            nextResetTimestamp: 0, 
+            historicalGrandTotal: 0, 
+            streakCount: 0,
+            lastActiveDate: "",
+            Baseball: { total: 0, logs: [], history: [], masterVault: [] },
+            Basketball: { total: 0, logs: [], history: [], masterVault: [] },
+            Football: { total: 0, logs: [], history: [], masterVault: [] },
+            Golf: { total: 0, logs: [], history: [], masterVault: [] },
+            Soccer: { total: 0, logs: [], history: [], masterVault: [] },
+            Swimming: { total: 0, logs: [], history: [], masterVault: [] },
+            Tennis: { total: 0, logs: [], history: [], masterVault: [] },
+            'Track & Field': { total: 0, logs: [], history: [], masterVault: [] }
+        };
+    }
+
+    /* STREAK ENGINE */
+    function updateStreakEngine() {
+        if (!appData.lastActiveDate) {
+            appData.streakCount = 0;
+            updateStreakUI(0);
+            return;
+        }
+
+        const today = new Date();
+        const lastActive = new Date(appData.lastActiveDate);
+
+        // Strip timestamp info
+        today.setHours(0,0,0,0);
+        lastActive.setHours(0,0,0,0);
+
+        const diffTime = Math.abs(today - lastActive);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays > 1) {
+            // Broken streak (more than 1 day missed)
+            appData.streakCount = 0;
+            saveToLocalStorage();
+        }
+        
+        updateStreakUI(appData.streakCount);
+    }
+
+    function recordActivityToStreak() {
+        const today = new Date();
+        today.setHours(0,0,0,0);
+        const todayStr = today.toISOString().split('T')[0];
+
+        if (appData.lastActiveDate) {
+            const lastActive = new Date(appData.lastActiveDate);
+            lastActive.setHours(0,0,0,0);
+            const lastActiveStr = lastActive.toISOString().split('T')[0];
+
+            if (todayStr !== lastActiveStr) {
+                const diffTime = Math.abs(today - lastActive);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                if (diffDays === 1) {
+                    // Perfect connection! Streak goes up
+                    appData.streakCount++;
+                } else {
+                    // Reset to 1 day if they skipped one or more days
+                    appData.streakCount = 1;
+                }
+            }
+        } else {
+            // First ever log
+            appData.streakCount = 1;
+        }
+
+        appData.lastActiveDate = todayStr;
+        saveToLocalStorage();
+        updateStreakUI(appData.streakCount);
+    }
+
+    function updateStreakUI(count) {
+        document.getElementById('streak-count').innerText = count;
+        document.getElementById('tracker-streak-badge').innerText = `🔥 ${count} d`;
+    }
+
+    /* RPE SELECTOR */
+    function selectRPE(rpeValue) {
+        selectedRPE = rpeValue;
+        document.querySelectorAll('.rpe-chip').forEach(chip => {
+            chip.classList.remove('active');
+        });
+        const selectedChip = document.querySelector(`.rpe-chip[data-rpe="${rpeValue}"]`);
+        if (selectedChip) selectedChip.classList.add('active');
+    }
+
+    /* STOPWATCH LOGIC */
+    function toggleStopwatch() {
+        const toggleBtn = document.getElementById('timer-toggle-btn');
+        if (isStopwatchRunning) {
+            clearInterval(stopwatchInterval);
+            isStopwatchRunning = false;
+            toggleBtn.innerText = 'Start';
+            toggleBtn.className = 'timer-btn start';
+        } else {
+            isStopwatchRunning = true;
+            toggleBtn.innerText = 'Pause';
+            toggleBtn.className = 'timer-btn pause';
+            
+            stopwatchInterval = setInterval(() => {
+                stopwatchElapsedSeconds++;
+                updateStopwatchDisplay();
+            }, 1000);
+        }
+    }
+
+    function resetStopwatch() {
+        clearInterval(stopwatchInterval);
+        isStopwatchRunning = false;
+        stopwatchElapsedSeconds = 0;
+        updateStopwatchDisplay();
+        const toggleBtn = document.getElementById('timer-toggle-btn');
+        toggleBtn.innerText = 'Start';
+        toggleBtn.className = 'timer-btn start';
+    }
+
+    function updateStopwatchDisplay() {
+        const hrs = Math.floor(stopwatchElapsedSeconds / 3600);
+        const mins = Math.floor((stopwatchElapsedSeconds % 3600) / 60);
+        const secs = stopwatchElapsedSeconds % 60;
+        
+        const pad = (num) => String(num).padStart(2, '0');
+        document.getElementById('stopwatch-display').innerText = `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
+    }
+
+    function applyStopwatchTime() {
+        if (stopwatchElapsedSeconds === 0) {
+            alert("The timer hasn't run yet! Start the stopwatch to track live training duration.");
+            return;
+        }
+        const minutes = Math.max(1, Math.round(stopwatchElapsedSeconds / 60));
+        document.getElementById('duration').value = minutes;
+        
+        const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const todayName = weekdays[new Date().getDay()];
+        document.getElementById('day').value = todayName;
+        
+        alert(`Successfully applied ${minutes} minute(s) to duration input for ${todayName}!`);
+    }
 
     function getNextSundayDeadline() {
         const now = new Date();
@@ -737,7 +1075,6 @@
                         totalVolume: appData[sport].total
                     };
                     appData[sport].history.unshift(pastWeekEntry);
-                    
                     appData.historicalGrandTotal += appData[sport].total;
                     
                     appData[sport].total = 0;
@@ -766,6 +1103,7 @@
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(screenId).classList.add('active');
         if(screenId === 'screen-home') {
+            updateStreakEngine();
             updateGlobalHomeTotal();
         }
         if(screenId === 'screen-settings') {
@@ -813,13 +1151,20 @@
             appData[currentSport].logs.forEach(log => {
                 const item = document.createElement('div');
                 item.className = 'log-item';
+                
+                const rpeClass = log.rpe ? `rpe-tag-${log.rpe}` : 'rpe-tag-3-4';
+                const rpeText = log.rpe ? `RPE: ${log.rpe}` : 'RPE: 3-4';
+
                 item.innerHTML = `
                     <div>
                         <div class="log-day">${log.day}</div>
                         <div class="log-activity">${log.activities}</div>
                         <div class="log-time-stamp">Recorded: ${log.timestamp}</div>
                     </div>
-                    <div class="log-time">${log.duration}m</div>
+                    <div class="log-stats">
+                        <span class="log-time">${log.duration}m</span>
+                        <span class="log-rpe-tag ${rpeClass}">${rpeText}</span>
+                    </div>
                 `;
                 logsContainer.appendChild(item);
             });
@@ -903,7 +1248,7 @@
                 <div class="folder-content" id="vault-content-${sport.replace(/[^a-zA-Z0-BA-Z0-9]/g, '')}">
                     ${folderArr.length === 0 ? 
                         '<div style="color:var(--text-muted); font-size:12px; text-align:center; padding:8px;">Vault is clean. No historic logs saved.</div>' : 
-                        folderArr.map(item => `<div class="vault-item"><strong>${item.timestamp}</strong> — Spent ${item.duration} mins on <em>${item.activities}</em> (${item.day})</div>`).join('')
+                        folderArr.map(item => `<div class="vault-item"><strong>${item.timestamp}</strong> — Spent ${item.duration} mins on <em>${item.activities}</em> (${item.day}) | <span style="color:#fbbf24; font-weight:700;">RPE: ${item.rpe || '3-4'}</span></div>`).join('')
                     }
                 </div>
             `;
@@ -976,12 +1321,16 @@
             day: dayInput,
             activities: activitySummaryList.join(', '),
             duration: durationInput,
+            rpe: selectedRPE,
             timestamp: getFormattedTimestamp()
         };
 
         appData[currentSport].logs.unshift(newLog);
         appData[currentSport].masterVault.unshift(newLog);
         appData[currentSport].total += durationInput;
+
+        // Process Streak calculation
+        recordActivityToStreak();
 
         document.getElementById('duration').value = '';
         saveToLocalStorage();
@@ -1027,6 +1376,7 @@
             localStorage.removeItem('apex_os_data');
             localStorage.removeItem('apex_os_active_sport');
             document.getElementById('sport-select').value = 'Baseball';
+            resetStopwatch();
             renderSportProfile();
             buildVaultFolders();
             updateGlobalHomeTotal();
