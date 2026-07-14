@@ -80,7 +80,7 @@
             transform: rotate(45deg);
         }
 
-        /* Streak Display Elements */
+        /* Streak Display */
         .streak-widget {
             background: rgba(255, 75, 75, 0.08);
             border: 1px solid rgba(255, 75, 75, 0.25);
@@ -95,13 +95,8 @@
             font-weight: 800;
             color: var(--accent-red);
         }
-        .streak-label {
-            font-size: 11px;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
 
-        /* Settings Dropdown Drawer */
+        /* Settings Drawer */
         .settings-drawer {
             display: none;
             background: #161622;
@@ -114,7 +109,7 @@
             display: block;
         }
 
-        /* Layout Architecture */
+        /* Dashboard Elements */
         .dashboard-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -130,7 +125,7 @@
             font-weight: 700;
         }
 
-        /* Navigation Management */
+        /* Views */
         .tab-view {
             display: none;
         }
@@ -138,7 +133,7 @@
             display: block;
         }
 
-        /* Controls & Form Formatting */
+        /* Inputs & Controls */
         select, input {
             width: 100%;
             background: #181822;
@@ -187,7 +182,7 @@
             cursor: pointer;
         }
 
-        /* Chart Components */
+        /* Charts */
         .chart-container {
             display: flex;
             justify-content: space-between;
@@ -228,7 +223,7 @@
             margin-top: 6px;
         }
 
-        /* Feed List Elements */
+        /* Feeds */
         .log-item {
             background: #181822;
             border: 1px solid var(--border-color);
@@ -244,7 +239,7 @@
         .log-time-stamp { font-size: 10px; color: #4e4e61; margin-top: 4px; }
         .log-time { font-size: 14px; font-weight: 700; color: var(--accent-green); }
 
-        /* Trophy Gallery formatting */
+        /* Trophies */
         .trophy-shelf {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -271,7 +266,7 @@
         .trophy-name { font-size: 14px; font-weight: 700; display: block; margin-bottom: 4px; }
         .trophy-desc { font-size: 11px; color: var(--text-muted); line-height: 1.3; }
 
-        /* Audio Module Layout */
+        /* Audio Module */
         .audio-dock {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -290,7 +285,7 @@
         .audio-btn.mute-toggle { font-size: 16px; color: var(--text-muted); }
         .audio-btn.mute-toggle.active-mute { color: var(--accent-red); }
 
-        /* Global Navigation Dock */
+        /* Bottom Nav */
         .nav-dock {
             position: absolute;
             bottom: 0;
@@ -399,7 +394,6 @@
                 </div>
             </div>
             <div class="audio-controls">
-                <!-- Dedicated Mute/Volume Control Button -->
                 <button onclick="toggleMute()" id="mute-btn" class="audio-btn mute-toggle">🔊</button>
                 <button onclick="togglePlay()" id="play-btn" class="audio-btn" style="color: var(--accent-green);">▶</button>
                 <button onclick="nextTrack()" class="audio-btn">⏭</button>
@@ -417,7 +411,7 @@
     <!-- TAB 2: TROPHY ROOM & MILESTONES -->
     <div id="view-trophies" class="tab-view">
         <div class="trophy-shelf" id="trophy-shelf">
-            <!-- Rendered dynamically by JavaScript -->
+            <!-- Rendered dynamically -->
         </div>
     </div>
 
@@ -473,13 +467,13 @@
         loadTrack(currentTrackIndex);
     });
 
-    /* --- TOGGLE SETTINGS DRAWER (SPORT SWITCHER) --- */
+    /* --- SETTINGS DRAWER MANAGEMENT --- */
     function toggleSettingsDrawer() {
         const drawer = document.getElementById('settings-drawer');
         drawer.classList.toggle('open');
     }
 
-    /* --- APP NAVIGATION ARCHITECTURE --- */
+    /* --- TAB ROUTER --- */
     function switchTab(targetTab) {
         document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active-view'));
         document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active-nav'));
@@ -501,13 +495,13 @@
             document.getElementById('nav-btn-trophies').classList.add('active-nav');
             streakBadge.style.display = 'none'; 
             gearButton.style.display = 'none';
-            drawer.classList.remove('open'); // Auto-collapse if switching away
+            drawer.classList.remove('open'); 
             subtitle.innerText = "Milestone Achievements";
             renderTrophies();
         }
     }
 
-    /* --- PROFILE & INPUT SUBROUTINES --- */
+    /* --- PROFILE & RENDER LOGIC --- */
     function renderSportProfile() {
         const currentSport = document.getElementById('sport-select').value;
         document.getElementById('active-sport-title').innerText = currentSport;
@@ -564,7 +558,6 @@
         const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         const currentDay = days[new Date().getDay()];
 
-        // Insert new entry log
         appData[currentSport].logs.push({
             day: currentDay,
             activities: finalActivities,
@@ -575,13 +568,11 @@
         appData[currentSport].total += duration;
         durationInput.value = '';
         
-        // Auto-close settings drawer on log submit to keep the UI clean
         document.getElementById('settings-drawer').classList.remove('open');
-        
         renderSportProfile();
     }
 
-    /* --- CHART AND LIST RENDERING ENGINE --- */
+    /* --- CHARTS AND FEED GRAPHICS --- */
     function updateChartData(sport) {
         const dailyTotals = { Monday: 0, Tuesday: 0, Wednesday: 0, Thursday: 0, Friday: 0, Saturday: 0, Sunday: 0 };
         if (appData[sport] && appData[sport].logs) {
@@ -630,7 +621,7 @@
         });
     }
 
-    /* --- TAB 2: TROPHY GALLERY MANAGEMENT --- */
+    /* --- TROPHY SYSTEM --- */
     function renderTrophies() {
         const shelf = document.getElementById('trophy-shelf');
         shelf.innerHTML = '';
@@ -648,7 +639,7 @@
         });
     }
 
-    /* --- AUDIO PLAYER LOGIC & MUTE DOCK --- */
+    /* --- AUDIO CONTROLS --- */
     const audioEl = document.getElementById('bg-audio');
 
     function loadTrack(index) {
@@ -665,7 +656,7 @@
             playBtn.innerText = "▶";
             isPlaying = false;
         } else {
-            audioEl.play().catch(e => console.log("Stream connecting..."));
+            audioEl.play().catch(e => console.log("Audio link connecting..."));
             playBtn.innerText = "⏸";
             isPlaying = true;
         }
