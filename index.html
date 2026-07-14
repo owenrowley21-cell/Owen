@@ -32,9 +32,16 @@
             overflow-x: hidden;
         }
 
-        .screen { display: none; animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        .screen.active { display: block; }
+        /* Screen Wrapper Animations */
+        .screen {
+            display: none;
+            animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .screen.active {
+            display: block;
+        }
 
+        /* HOME SCREEN SPECIFIC STYLE */
         .home-screen {
             position: relative;
             background: linear-gradient(135deg, #111827 0%, #070a10 100%);
@@ -46,6 +53,20 @@
             overflow: hidden;
         }
 
+        .home-screen::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            opacity: 0.04;
+            background-image: 
+                radial-gradient(circle at 20% 20%, transparent 50%, #fff 52%, transparent 55%),
+                radial-gradient(circle at 80% 40%, transparent 40%, #fff 42%, transparent 45%),
+                linear-gradient(45deg, transparent 45%, #fff 48%, #fff 52%, transparent 55%);
+            background-size: 120px 120px;
+            pointer-events: none;
+        }
+
+        /* Settings Header Button */
         .settings-trigger {
             position: absolute;
             top: 24px;
@@ -64,7 +85,11 @@
             transition: all 0.2s ease;
             z-index: 10;
         }
-        .settings-trigger:hover { color: #ffffff; background: rgba(255, 255, 255, 0.1); transform: rotate(45deg); }
+        .settings-trigger:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(45deg);
+        }
 
         .home-title {
             font-size: 36px;
@@ -139,8 +164,13 @@
             transition: all 0.25s ease;
             box-shadow: 0 10px 25px rgba(255, 255, 255, 0.1);
         }
-        button.launch-btn:hover { transform: scale(1.02); box-shadow: 0 12px 30px rgba(255, 255, 255, 0.2); }
 
+        button.launch-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 12px 30px rgba(255, 255, 255, 0.2);
+        }
+
+        /* GENERAL PANEL SETTINGS */
         .dashboard {
             background: var(--bg-card);
             padding: 30px 24px;
@@ -149,9 +179,19 @@
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
 
-        .nav-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .nav-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
 
-        h1 { font-size: 24px; font-weight: 800; margin: 0; letter-spacing: -0.5px; }
+        h1 {
+            font-size: 24px;
+            font-weight: 800;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
 
         .back-btn {
             background: rgba(255, 255, 255, 0.05);
@@ -164,6 +204,89 @@
             font-size: 12px;
         }
 
+        .sport-selector-group {
+            margin-bottom: 24px;
+        }
+        
+        .sport-select {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--accent);
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 12px var(--accent-glow);
+            color: var(--text-main);
+            border-radius: 12px;
+            font-size: 16px;
+        }
+
+        .total-box {
+            background: linear-gradient(135deg, #1e1b4b 0%, #111827 100%);
+            border: 1px solid rgba(79, 70, 229, 0.3);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+            text-align: center;
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .total-label {
+            color: var(--text-muted);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .total-number {
+            font-size: 40px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        /* TIMER SPECIFIC MODULE */
+        .timer-module {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            border: 1px dashed rgba(255, 255, 255, 0.15);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .timer-display {
+            font-size: 44px;
+            font-weight: 800;
+            font-family: monospace;
+            color: #ffffff;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+
+        .timer-btn-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .timer-btn {
+            background: var(--bg-input);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: #ffffff;
+            padding: 8px 16px;
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .timer-btn.start { background: rgba(16, 185, 129, 0.15); color: var(--success); border-color: rgba(16, 185, 129, 0.3); }
+        .timer-btn.stop { background: rgba(239, 68, 68, 0.15); color: var(--danger); border-color: rgba(239, 68, 68, 0.3); }
+        .timer-btn.sync { background: rgba(79, 70, 229, 0.2); color: #a5b4fc; border-color: var(--accent); }
+
+        /* MUSIC DECK MODULE - UPDATED */
         .music-module {
             background: rgba(139, 92, 246, 0.1);
             border: 1px solid rgba(139, 92, 246, 0.3);
@@ -189,6 +312,9 @@
             box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
             width: 100%;
         }
+        .music-toggle-btn:hover {
+            transform: scale(1.02);
+        }
         .music-toggle-btn.muted {
             background: rgba(255, 255, 255, 0.08);
             color: var(--text-muted);
@@ -196,47 +322,518 @@
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        /* CHART STYLE */
+        .chart-section {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+        .chart-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+        }
+        .chart-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            height: 120px;
+            padding-top: 10px;
+        }
+        .chart-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+        .chart-bar-wrapper {
+            height: 90px;
+            width: 100%;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            margin-bottom: 8px;
+        }
+        .chart-bar {
+            width: 24px;
+            background: linear-gradient(0deg, var(--accent) 0%, #818cf8 100%);
+            border-radius: 6px 6px 2px 2px;
+            height: 0%;
+            transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+        .chart-bar:hover .chart-tooltip {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-4px);
+        }
+        .chart-tooltip {
+            position: absolute;
+            top: -26px;
+            left: 50%;
+            transform: translateX(-50%) translateY(0);
+            background: #1e293b;
+            color: #ffffff;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .chart-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .history-toggle-btn {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-muted);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13px;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        select, input {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--bg-input);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            color: var(--text-main);
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .option-chip {
+            background: var(--bg-input);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            transition: all 0.2s ease;
+        }
+
+        .option-chip.selected {
+            background: rgba(79, 70, 229, 0.2);
+            border-color: var(--accent);
+            color: #a5b4fc;
+        }
+
+        #custom-activity-wrapper {
+            margin-top: 12px;
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        button.submit-btn {
+            flex: 2;
+            background: var(--text-main);
+            color: var(--bg-main);
+            border: none;
+            padding: 16px;
+            font-weight: 700;
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button.clear-btn {
+            flex: 1;
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            padding: 16px;
+            font-weight: 700;
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .log-list {
+            margin-top: 32px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 24px;
+        }
+
+        .log-list h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .log-item {
+            background: var(--bg-input);
+            padding: 16px;
+            border-radius: 14px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .log-day { font-weight: 700; font-size: 15px; }
+        .log-activity { color: var(--text-muted); font-size: 13px; max-width: 320px; }
+        .log-time-stamp { font-size: 11px; color: #64748b; margin-top: 4px; }
+        
+        .log-time {
+            font-weight: 700;
+            color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .history-card {
+            background: #1e293b;
+            padding: 14px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .history-week-title {
+            font-weight: 700;
+            font-size: 15px;
+            color: #a5b4fc;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* SETTINGS & ALL TIME HISTORY FOLDERS */
+        .folder-container {
+            margin-bottom: 16px;
+            border-radius: 14px;
+            background: var(--bg-input);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+        }
+
+        .folder-header {
+            padding: 16px;
+            background: rgba(255,255,255,0.02);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            font-size: 15px;
+            transition: background 0.2s ease;
+        }
+
+        .folder-header:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .folder-content {
+            display: none;
+            padding: 12px;
+            background: rgba(0,0,0,0.15);
+            border-top: 1px solid rgba(255,255,255,0.03);
+            max-height: 260px;
+            overflow-y: auto;
+        }
+
+        .vault-item {
+            padding: 10px 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            font-size: 13px;
+        }
+        .vault-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-btn-row {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+
+        /* Discrete Small Reset Button */
+        .small-reset-btn {
+            background: transparent;
+            color: #ef4444;
+            border: 1px dashed rgba(239, 68, 68, 0.3);
+            padding: 6px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            display: block;
+            margin: 20px auto 0 auto;
+            transition: all 0.2s ease;
+            opacity: 0.6;
+        }
+        .small-reset-btn:hover {
+            opacity: 1;
+            background: rgba(239, 68, 68, 0.08);
+            border-color: #ef4444;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
 
+<!-- WEB AUDIO API BACKGROUND MUSIC VECTOR -->
+<div id="audio-container"></div>
+
+<!-- SCREEN 1: HOME SCREEN -->
 <div id="screen-home" class="screen active home-screen">
-    <button class="settings-trigger" onclick="navigateTo('screen-tracker')">⚙️</button>
+    <button class="settings-trigger" onclick="navigateTo('screen-settings')">⚙️</button>
+
     <div class="home-title">APEX TRACKER</div>
-    <div class="home-subtitle">Performance System</div>
+    <div class="home-subtitle">Performance Operating System</div>
     
     <div class="global-stat-box">
         <div class="total-label" style="margin-bottom: 12px;">All-Time Total Volume</div>
         <div class="global-number"><span id="global-all-time-total">0</span></div>
+        <div class="total-label" style="font-size: 11px; margin-top: 8px; color:#64748b;">Minutes Tracked Across All Sports</div>
     </div>
 
-    <div class="music-module">
-        <button class="music-toggle-btn muted" id="music-action-btn" onclick="toggleRadioPlayback()">Unmute</button>
+    <!-- STREAK BOX -->
+    <div class="streak-stat-box">
+        <div class="total-label" style="margin-bottom: 6px; color: var(--text-muted);">Current Logging Streak</div>
+        <div class="streak-number">🔥 <span id="home-streak-count">0</span> Days</div>
     </div>
 
-    <button class="launch-btn" onclick="navigateTo('screen-tracker')">Enter Workspace →</button>
+    <button class="launch-btn" onclick="navigateTo('screen-tracker')">Start Tracking →</button>
 </div>
 
+
+<!-- SCREEN 2: MAIN WORKSPACE INTERFACE -->
 <div id="screen-tracker" class="screen">
     <div class="dashboard">
         <div class="nav-header">
             <h1>Workspace</h1>
             <button class="back-btn" onclick="navigateTo('screen-home')">← Home</button>
         </div>
+        
+        <div class="form-group sport-selector-group">
+            <label for="sport-select">Active Profile</label>
+            <select id="sport-select" class="sport-select" onchange="switchSport()">
+                <option value="Baseball">Baseball Profile</option>
+                <option value="Basketball">Basketball Profile</option>
+                <option value="Football">Football Profile</option>
+                <option value="Golf">Golf Profile</option>
+                <option value="Soccer">Soccer Profile</option>
+                <option value="Swimming">Swimming Profile</option>
+                <option value="Tennis">Tennis Profile</option>
+                <option value="Track & Field">Track & Field Profile</option>
+            </select>
+        </div>
+
+        <div class="total-box">
+            <div class="total-label"><span id="active-sport-title">Baseball</span> Current Week</div>
+            <div class="total-number"><span id="weekly-total">0</span> <span style="font-size: 20px; font-weight: 500; color: var(--text-muted);">mins</span></div>
+        </div>
+
+        <!-- INTEGRATED WORKOUT TIMER MODULE -->
+        <div class="timer-module">
+            <div class="total-label" style="margin-bottom: 4px; color:#a5b4fc;">Session Clock Vector</div>
+            <div class="timer-display" id="clock-render">00:00:00</div>
+            <div class="timer-btn-row">
+                <button class="timer-btn start" id="timer-toggle-btn" onclick="toggleTimerClock()">Start Clock</button>
+                <button class="timer-btn stop" onclick="resetTimerClock()">Reset</button>
+                <button class="timer-btn sync" onclick="syncTimerToInput()">Sync Mins to Form</button>
+            </div>
+        </div>
+
+        <!-- APEX RADIO DECK MODULE -->
+        <div class="music-module">
+            <button class="music-toggle-btn muted" id="music-action-btn" onclick="toggleRadioPlayback()">Unmute</button>
+        </div>
+
+        <div class="chart-section">
+            <div class="chart-title">Daily Metric Comparison</div>
+            <div class="chart-container">
+                <div class="chart-column"><div class="chart-bar-wrapper"><div class="chart-bar" id="bar-Mon"><span class="chart-tooltip" id="tip-Mon">0m</span></div></div><div class="chart-label">M</div></div>
+                <div class="chart-column"><div class="chart-bar-wrapper"><div class="chart-bar" id="bar-Tue"><span class="chart-tooltip" id="tip-Tue">0m</span></div></div><div class="chart-label">T</div></div>
+                <div class="chart-column"><div class="chart-bar-wrapper"><div class="chart-bar" id="bar-Wed"><span class="chart-tooltip" id="tip-Wed">0m</span></div></div><div class="chart-label">W</div></div>
+                <div class="chart-column"><div class="chart-bar-wrapper"><div class="chart-bar" id="bar-Thu"><span class="chart-tooltip" id="tip-Thu">0m</span></div></div><div class="chart-label">T</div></div>
+                <div class="chart-column"><div class="chart-bar-wrapper"><div class="chart-bar" id="bar-Fri"><span class="chart-tooltip" id="tip-Fri">0m</span></div></div><div class="chart-label">F</div></div>
+                <div class="chart-column"><div class="chart-bar-wrapper"><div class="chart-bar" id="bar-Sat"><span class="chart-tooltip" id="tip-Sat">0m</span></div></div><div class="chart-label">S</div></div>
+                <div class="chart-column"><div class="chart-bar-wrapper"><div class="chart-bar" id="bar-Sun"><span class="chart-tooltip" id="tip-Sun">0m</span></div></div><div class="chart-label">S</div></div>
+            </div>
+        </div>
+
+        <button class="history-toggle-btn" onclick="toggleHistoryView()" id="history-toggle-btn">📊 View Past Weeks Archive</button>
+
+        <div id="history-archive-section" style="display: none; margin-bottom: 28px;">
+            <label>Auto-Archived History</label>
+            <div id="history-weeks-container"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="day">Day of the Week</label>
+            <select id="day">
+                <option value="Monday">Monday</option> <option value="Tuesday">Tuesday</option> <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option> <option value="Friday">Friday</option> <option value="Saturday">Saturday</option> <option value="Sunday">Sunday</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Select Focus (Tap one or more)</label>
+            <div class="options-grid" id="chips-container"></div>
+            <div id="custom-activity-wrapper" style="display: none;">
+                <input type="text" id="custom-activity" placeholder="Describe your custom workout...">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="duration">Duration (Minutes)</label>
+            <input type="number" id="duration" placeholder="Enter minutes manually or sync from clock" min="1">
+        </div>
+
+        <div class="btn-container">
+            <button class="clear-btn" onclick="confirmClear()">Clear Feed</button>
+            <button class="submit-btn" onclick="logSession()">Log Session</button>
+        </div>
+
+        <div class="log-list">
+            <h3>Active Week Feed</h3>
+            <div id="logs-container"></div>
+        </div>
+    </div>
+</div>
+
+
+<!-- SCREEN 3: SETTINGS & PERMANENT VAULT HISTORY -->
+<div id="screen-settings" class="screen">
+    <div class="dashboard">
+        <div class="nav-header">
+            <h1>Settings & Archives</h1>
+            <button class="back-btn" onclick="navigateTo('screen-home')">← Home</button>
+        </div>
+
+        <div style="margin-bottom: 24px;">
+            <label style="color: #ffffff; font-size: 16px; margin-bottom: 4px;">🗂️ Global Data Folders</label>
+            <p style="color: var(--text-muted); font-size: 13px; margin: 0 0 16px 0;">Calculates total minutes (active week + archived weeks) and organizes every session statement recorded.</p>
+            
+            <div id="vault-folders-wrapper"></div>
+        </div>
+
+        <div class="setting-btn-row">
+            <button class="history-toggle-btn" style="background: rgba(79, 70, 229, 0.1); color: #a5b4fc; margin-bottom: 10px;" onclick="exportRawBackup()">💾 Copy Raw Data Backup</button>
+            <p style="color: #64748b; font-size: 11px; text-align: center; margin: 0;">Apex Tracker • Secure LocalStorage Engine</p>
+            
+            <button class="small-reset-btn" onclick="factoryResetDatabase()">⚠️ Erase All History & Data</button>
+        </div>
     </div>
 </div>
 
 <script>
+    const sportOptions = {
+        Baseball: ['Batting Cage / Hitting', 'Infield / Outfield Drills', 'Pitching Bullpen', 'Base Running', 'Scrimmage / Match Play', 'Strength / Weights', 'Speed & Sprints', 'Agility Drills', 'Film Session', 'Other'],
+        Basketball: ['Shooting Drills', 'Dribbling & Handles', 'Scrimmage / Pick-up', 'Defensive Slides', 'Conditioning', 'Free Throws', 'Rebounding', 'Speed & Agility', 'Film Study', 'Other'],
+        Football: ['Route Running', 'Strength / Weights', 'Speed & Sprints', 'Position Drills', 'Conditioning', 'Scrimmage / Playbook', 'Agility Drills', 'Tackling Technique', 'Film Session', 'Other'],
+        Golf: ['Driving Range', 'Putting Green', 'Chipping Drills', 'Full 9/18 Holes', 'Iron Play', 'Swing Mechanics', 'Core Fitness', 'Course Strategy', 'Other'],
+        Soccer: ['Positioning Drills', 'Conditioning / Fitness', 'Match Play / Scrimmage', 'Agility & Footwork', 'Passing & Receiving', 'Shooting / Finishing', 'Defensive Shape', 'Speed & Sprints', 'Tactical Film', 'Other'],
+        Swimming: ['Lap Endurance', 'Sprint Sets', 'Kickboard Drills', 'Turn & Start Mechanics', 'Stroke Technique', 'Core & Stability', 'Flexibility / Stretching', 'Dryland Conditioning', 'Other'],
+        Tennis: ['First Serves', 'Forehand Volleys', 'Backhand Rallies', 'Footwork & Baseline', 'Match Scrimmage', 'Return Positioning', 'Slice & Spin Tech', 'Cardio Tennis', 'Other'],
+        'Track & Field': ['Endurance Runs', 'Sprint Intervals', 'Core Work / Stability', 'Form Mechanics', 'Strength Training', 'Flexibility / Stretching', 'Explosive Starts', 'Agility Drills', 'Other']
+    };
+
+    let appData;
+    let selectedActivities = [];
+    let viewingHistory = false;
+
+    // Timer state vectors
+    let timerInterval = null;
+    let timerSeconds = 0;
+    let isTimerRunning = false;
+
+    // Audio State Engine
     let audioContext = null;
     let audioNode = null;
     let isMusicPlaying = false;
 
-    function navigateTo(screenId) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(screenId).classList.add('active');
+    window.onload = function() {
+        appData = getFreshDataObject();
+        const savedData = localStorage.getItem('apex_os_data');
+        if (savedData) {
+            appData = JSON.parse(savedData);
+            Object.keys(sportOptions).forEach(sport => {
+                if(!appData[sport]) {
+                    appData[sport] = { total: 0, logs: [], history: [], masterVault: [] };
+                }
+                if(!appData[sport].masterVault) appData[sport].masterVault = [];
+                if(!appData[sport].history) appData[sport].history = [];
+            });
+        }
+        
+        const savedSport = localStorage.getItem('apex_os_active_sport');
+        if (savedSport && sportOptions[savedSport]) {
+            document.getElementById('sport-select').value = savedSport;
+        } else {
+            document.getElementById('sport-select').value = 'Baseball';
+        }
+
+        checkAndAutoArchiveWeek();
+        updateGlobalHomeTotal();
+        renderSportProfile();
+        buildVaultFolders();
+    };
+
+    function getFreshDataObject() {
+        return {
+            nextResetTimestamp: 0, 
+            historicalGrandTotal: 0, 
+            Baseball: { total: 0, logs: [], history: [], masterVault: [] },
+            Basketball: { total: 0, logs: [], history: [], masterVault: [] },
+            Football: { total: 0, logs: [], history: [], masterVault: [] },
+            Golf: { total: 0, logs: [], history: [], masterVault: [] },
+            Soccer: { total: 0, logs: [], history: [], masterVault: [] },
+            Swimming: { total: 0, logs: [], history: [], masterVault: [] },
+            Tennis: { total: 0, logs: [], history: [], masterVault: [] },
+            'Track & Field': { total: 0, logs: [], history: [], masterVault: [] }
+        };
     }
 
+    /* BACKGROUND AUDIO HANDLING LOGIC */
     function toggleRadioPlayback() {
         const btn = document.getElementById('music-action-btn');
         
@@ -263,12 +860,16 @@
     function playContinuousHypeLoop() {
         if (!isMusicPlaying) return;
 
+        if (audioNode) {
+            audioNode.stop();
+        }
+
         const osc = audioContext.createOscillator();
         const gain = audioContext.createGain();
         
-        // Changed to triangle for a smoother organ/tone sound
-        osc.type = 'triangle'; 
+        osc.type = 'sawtooth'; 
         osc.frequency.setValueAtTime(110, audioContext.currentTime);
+        
         osc.frequency.exponentialRampToValueAtTime(165, audioContext.currentTime + 3);
         osc.frequency.exponentialRampToValueAtTime(110, audioContext.currentTime + 6);
 
@@ -284,6 +885,465 @@
         osc.onended = () => {
             if (isMusicPlaying) playContinuousHypeLoop();
         };
+    }
+
+    /* CLOCK TIMER LOGIC CONTROLLERS */
+    function toggleTimerClock() {
+        const btn = document.getElementById('timer-toggle-btn');
+        if (isTimerRunning) {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            btn.innerText = 'Start Clock';
+            btn.className = 'timer-btn start';
+        } else {
+            isTimerRunning = true;
+            btn.innerText = 'Stop Clock';
+            btn.className = 'timer-btn stop';
+            timerInterval = setInterval(() => {
+                timerSeconds++;
+                renderClockText();
+            }, 1000);
+        }
+    }
+
+    function resetTimerClock() {
+        clearInterval(timerInterval);
+        isTimerRunning = false;
+        timerSeconds = 0;
+        renderClockText();
+        const btn = document.getElementById('timer-toggle-btn');
+        btn.innerText = 'Start Clock';
+        btn.className = 'timer-btn start';
+    }
+
+    function renderClockText() {
+        const hrs = String(Math.floor(timerSeconds / 3600)).padStart(2, '0');
+        const mins = String(Math.floor((timerSeconds % 3600) / 60)).padStart(2, '0');
+        const secs = String(timerSeconds % 60).padStart(2, '0');
+        document.getElementById('clock-render').innerText = `${hrs}:${mins}:${secs}`;
+    }
+
+    function syncTimerToInput() {
+        const rawMins = timerSeconds / 60;
+        let calculatedMinutes = Math.floor(rawMins);
+        if (timerSeconds % 60 > 0) {
+            calculatedMinutes += 1;
+        }
+        
+        if (calculatedMinutes <= 0) {
+            alert("No tracked clock session volume found to synchronize yet.");
+            return;
+        }
+        document.getElementById('duration').value = calculatedMinutes;
+    }
+
+    function getNextSundayDeadline() {
+        const now = new Date();
+        const deadline = new Date(now);
+        const currentDay = now.getDay();
+        const daysToSunday = currentDay === 0 ? 0 : 7 - currentDay;
+        
+        deadline.setDate(now.getDate() + daysToSunday);
+        deadline.setHours(23, 59, 0, 0); 
+        
+        if (now.getTime() > deadline.getTime()) {
+            deadline.setDate(deadline.getDate() + 7);
+        }
+        return deadline.getTime();
+    }
+
+    function checkAndAutoArchiveWeek() {
+        const now = new Date().getTime();
+
+        if (!appData.nextResetTimestamp) {
+            appData.nextResetTimestamp = getNextSundayDeadline();
+            saveToLocalStorage();
+            return;
+        }
+
+        if (now >= appData.nextResetTimestamp) {
+            Object.keys(sportOptions).forEach(sport => {
+                if (appData[sport] && appData[sport].total > 0) {
+                    const archiveLabel = "Week ending " + new Date(appData.nextResetTimestamp).toLocaleDateString('en-US', {month:'short', day:'numeric'});
+                    const pastWeekEntry = {
+                        archiveDate: archiveLabel,
+                        totalVolume: appData[sport].total
+                    };
+                    appData[sport].history.unshift(pastWeekEntry);
+                    
+                    appData.historicalGrandTotal += appData[sport].total;
+                    
+                    appData[sport].total = 0;
+                    appData[sport].logs = [];
+                }
+            });
+
+            appData.nextResetTimestamp = getNextSundayDeadline();
+            saveToLocalStorage();
+        }
+    }
+
+    function calculateStreak() {
+        let allTimestamps = [];
+        
+        Object.keys(sportOptions).forEach(sport => {
+            if (appData[sport] && appData[sport].masterVault) {
+                appData[sport].masterVault.forEach(item => {
+                    const datePart = item.timestamp.split(' @')[0];
+                    const parsedDate = new Date(datePart);
+                    if (!isNaN(parsedDate.getTime())) {
+                        const dateString = parsedDate.getFullYear() + '-' + (parsedDate.getMonth() + 1) + '-' + parsedDate.getDate();
+                        if (!allTimestamps.includes(dateString)) {
+                            allTimestamps.push(dateString);
+                        }
+                    }
+                });
+            }
+        });
+
+        if (allTimestamps.length === 0) return 0;
+
+        let uniqueDates = allTimestamps.map(d => new Date(d)).sort((a, b) => b - a);
+
+        const today = new Date();
+        const todayStr = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+        const yesterday = new Date(today);
+        yesterday.setDate(today.getDate() - 1);
+        const yesterdayStr = yesterday.getFullYear() + '-' + (yesterday.getMonth() + 1) + '-' + yesterday.getDate();
+
+        let formattedUniqueStrings = uniqueDates.map(d => d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate());
+
+        if (!formattedUniqueStrings.includes(todayStr) && !formattedUniqueStrings.includes(yesterdayStr)) {
+            return 0;
+        }
+
+        let streak = 0;
+        let currentCheckDate = new Date(uniqueDates[0]);
+
+        if (!formattedUniqueStrings.includes(todayStr) && formattedUniqueStrings.includes(yesterdayStr)) {
+            currentCheckDate = new Date(yesterdayStr);
+        } else {
+            currentCheckDate = new Date(todayStr);
+        }
+
+        while (true) {
+            const checkStr = currentCheckDate.getFullYear() + '-' + (currentCheckDate.getMonth() + 1) + '-' + currentCheckDate.getDate();
+            if (formattedUniqueStrings.includes(checkStr)) {
+                streak++;
+                currentCheckDate.setDate(currentCheckDate.getDate() - 1);
+            } else {
+                break;
+            }
+        }
+
+        return streak;
+    }
+
+    function updateGlobalHomeTotal() {
+        let activeWeekSum = 0;
+        Object.keys(sportOptions).forEach(sport => {
+            if (appData[sport]) {
+                activeWeekSum += appData[sport].total;
+            }
+        });
+        
+        const grandTotal = (appData.historicalGrandTotal || 0) + activeWeekSum;
+        document.getElementById('global-all-time-total').innerText = grandTotal;
+        document.getElementById('home-streak-count').innerText = calculateStreak();
+    }
+
+    function navigateTo(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+        if(screenId === 'screen-home') {
+            updateGlobalHomeTotal();
+        }
+        if(screenId === 'screen-settings') {
+            buildVaultFolders();
+        }
+    }
+
+    function getFormattedTimestamp() {
+        const now = new Date();
+        const options = { month: 'short', day: 'numeric', year: 'numeric' };
+        const dateStr = now.toLocaleDateString('en-US', options);
+        let hours = now.getHours();
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12 || 12;
+        return `${dateStr} @ ${hours}:${minutes} ${ampm}`;
+    }
+
+    function renderSportProfile() {
+        const currentSport = document.getElementById('sport-select').value;
+        document.getElementById('active-sport-title').innerText = currentSport;
+        document.getElementById('weekly-total').innerText = appData[currentSport].total;
+        
+        selectedActivities = [];
+        document.getElementById('custom-activity-wrapper').style.display = 'none';
+        document.getElementById('custom-activity').value = '';
+
+        const chipsContainer = document.getElementById('chips-container');
+        chipsContainer.innerHTML = '';
+        
+        sportOptions[currentSport].forEach(activity => {
+            const chip = document.createElement('div');
+            chip.className = 'option-chip';
+            chip.innerText = activity;
+            chip.onclick = function() { toggleOption(this, activity); };
+            chipsContainer.appendChild(chip);
+        });
+
+        const logsContainer = document.getElementById('logs-container');
+        logsContainer.innerHTML = '';
+        
+        if (appData[currentSport].logs.length === 0) {
+            logsContainer.innerHTML = '<div style="color:var(--text-muted); font-size:13px; text-align:center; padding:10px;">No workouts logged this week.</div>';
+        } else {
+            appData[currentSport].logs.forEach(log => {
+                const item = document.createElement('div');
+                item.className = 'log-item';
+                item.innerHTML = `
+                    <div>
+                        <div class="log-day">${log.day}</div>
+                        <div class="log-activity">${log.activities}</div>
+                        <div class="log-time-stamp">Recorded: ${log.timestamp}</div>
+                    </div>
+                    <div class="log-time">${log.duration}m</div>
+                `;
+                logsContainer.appendChild(item);
+            });
+        }
+        
+        updateWeeklyChart(currentSport);
+        renderHistoryList();
+    }
+
+    function updateWeeklyChart(sport) {
+        const dailyTotals = { Monday: 0, Tuesday: 0, Wednesday: 0, Thursday: 0, Friday: 0, Saturday: 0, Sunday: 0 };
+        const logs = appData[sport].logs || [];
+        
+        logs.forEach(log => {
+            if (dailyTotals[log.day] !== undefined) {
+                dailyTotals[log.day] += log.duration;
+            }
+        });
+
+        const values = Object.values(dailyTotals);
+        const maxVal = Math.max(...values, 1);
+        const dayKeys = { Monday: 'Mon', Tuesday: 'Tue', Wednesday: 'Wed', Thursday: 'Thu', Friday: 'Fri', Saturday: 'Sat', Sunday: 'Sun' };
+        
+        Object.keys(dailyTotals).forEach(day => {
+            const shortId = dayKeys[day];
+            const barElement = document.getElementById(`bar-${shortId}`);
+            const tooltipElement = document.getElementById(`tip-${shortId}`);
+            const totalMins = dailyTotals[day];
+            
+            const pct = (totalMins / maxVal) * 100;
+            barElement.style.height = totalMins > 0 ? `${Math.max(pct, 8)}%` : '0%';
+            tooltipElement.innerText = `${totalMins}m`;
+        });
+    }
+
+    function renderHistoryList() {
+        const currentSport = document.getElementById('sport-select').value;
+        const historyContainer = document.getElementById('history-weeks-container');
+        historyContainer.innerHTML = '';
+
+        const historyArray = appData[currentSport].history || [];
+        if (historyArray.length === 0) {
+            historyContainer.innerHTML = '<div style="color:var(--text-muted); font-size:13px; padding:5px;">No automatic archives found yet.</div>';
+        } else {
+            historyArray.forEach(week => {
+                const card = document.createElement('div');
+                card.className = 'history-card';
+                card.innerHTML = `
+                    <div class="history-week-title">
+                        <span>${week.archiveDate}</span>
+                        <span style="color: var(--success);">${week.totalVolume} mins</span>
+                    </div>
+                `;
+                historyContainer.appendChild(card);
+            });
+        }
+    }
+
+    function switchSport() {
+        const currentSport = document.getElementById('sport-select').value;
+        localStorage.setItem('apex_os_active_sport', currentSport);
+        renderSportProfile();
+    }
+
+    function toggleOption(chipElement, value) {
+        if (value === 'Other') {
+            const wrapper = document.getElementById('custom-activity-wrapper');
+            if (chipElement.classList.contains('selected')) {
+                chipElement.classList.remove('selected');
+                wrapper.style.display = 'none';
+                selectedActivities = selectedActivities.filter(item => item !== 'Other');
+            } else {
+                chipElement.classList.add('selected');
+                wrapper.style.display = 'block';
+                selectedActivities.push('Other');
+            }
+            return;
+        }
+
+        if (chipElement.classList.contains('selected')) {
+            chipElement.classList.remove('selected');
+            selectedActivities = selectedActivities.filter(item => item !== value);
+        } else {
+            chipElement.classList.add('selected');
+            selectedActivities.push(value);
+        }
+    }
+
+    function toggleHistoryView() {
+        const section = document.getElementById('history-archive-section');
+        const btn = document.getElementById('history-toggle-btn');
+        viewingHistory = !viewingHistory;
+        if (viewingHistory) {
+            section.style.display = 'block';
+            btn.innerText = '📊 Hide Past Weeks Archive';
+        } else {
+            section.style.display = 'none';
+            btn.innerText = '📊 View Past Weeks Archive';
+        }
+    }
+
+    function logSession() {
+        const currentSport = document.getElementById('sport-select').value;
+        const day = document.getElementById('day').value;
+        const durationInput = document.getElementById('duration');
+        const duration = parseInt(durationInput.value);
+
+        if (isNaN(duration) || duration <= 0) {
+            alert('Please enter a valid amount of minutes.');
+            return;
+        }
+
+        let activitiesCopy = [...selectedActivities];
+        if (activitiesCopy.includes('Other')) {
+            const customText = document.getElementById('custom-activity').value.trim();
+            activitiesCopy = activitiesCopy.filter(a => a !== 'Other');
+            if (customText) {
+                activitiesCopy.push(customText);
+            } else {
+                activitiesCopy.push('Custom Workout');
+            }
+        }
+
+        if (activitiesCopy.length === 0) {
+            alert('Please select at least one workout activity focus chip.');
+            return;
+        }
+
+        const activitiesString = activitiesCopy.join(', ');
+        const timestamp = getFormattedTimestamp();
+
+        const logEntry = {
+            day: day,
+            activities: activitiesString,
+            duration: duration,
+            timestamp: timestamp
+        };
+
+        appData[currentSport].logs.unshift(logEntry);
+        appData[currentSport].total += duration;
+
+        const structuralStatement = `${day} performance metrics: engaged in [${activitiesString}] structured configuration loop for ${duration} consecutive minutes.`;
+        appData[currentSport].masterVault.unshift({
+            timestamp: timestamp,
+            statement: structuralStatement
+        });
+
+        saveToLocalStorage();
+        renderSportProfile();
+        
+        durationInput.value = '';
+        document.getElementById('custom-activity').value = '';
+        
+        resetTimerClock();
+    }
+
+    function confirmClear() {
+        if (confirm('Are you sure you want to completely wipe out the data feeds for this active week loop?')) {
+            const currentSport = document.getElementById('sport-select').value;
+            appData[currentSport].total = 0;
+            appData[currentSport].logs = [];
+            saveToLocalStorage();
+            renderSportProfile();
+        }
+    }
+
+    function buildVaultFolders() {
+        const wrapper = document.getElementById('vault-folders-wrapper');
+        wrapper.innerHTML = '';
+
+        Object.keys(sportOptions).forEach(sport => {
+            const totalActive = appData[sport].total || 0;
+            const archivedTotal = (appData[sport].history || []).reduce((acc, curr) => acc + curr.totalVolume, 0);
+            const cumulativeSportSum = totalActive + archivedTotal;
+
+            const folder = document.createElement('div');
+            folder.className = 'folder-container';
+
+            const header = document.createElement('div');
+            header.className = 'folder-header';
+            header.innerHTML = `<span>📂 ${sport} (${cumulativeSportSum}m total)</span><span>▾</span>`;
+            
+            const content = document.createElement('div');
+            content.className = 'folder-content';
+
+            header.onclick = function() {
+                const isOpen = content.style.display === 'block';
+                content.style.display = isOpen ? 'none' : 'block';
+                header.querySelector('span:last-child').innerText = isOpen ? '▾' : '▴';
+            };
+
+            const statements = appData[sport].masterVault || [];
+            if (statements.length === 0) {
+                content.innerHTML = '<div class="vault-item" style="color:var(--text-muted);">No archived narrative sessions compiled inside this directory yet.</div>';
+            } else {
+                statements.forEach(item => {
+                    const statementDiv = document.createElement('div');
+                    statementDiv.className = 'vault-item';
+                    statementDiv.innerHTML = `
+                        <strong style="color:#a5b4fc; font-size:11px;">[${item.timestamp}]</strong><br>
+                        <span style="color:#e2e8f0;">${item.statement}</span>
+                    `;
+                    content.appendChild(statementDiv);
+                });
+            }
+
+            folder.appendChild(header);
+            folder.appendChild(content);
+            wrapper.appendChild(folder);
+        });
+    }
+
+    function exportRawBackup() {
+        const rawString = JSON.stringify(appData);
+        navigator.clipboard.writeText(rawString).then(() => {
+            alert('Full LocalStorage structural raw database payload cloned safely to clipboard buffer.');
+        }).catch(() => {
+            alert('Failed to execute automatic copy procedures. Check runtime permissions configurations.');
+        });
+    }
+
+    function factoryResetDatabase() {
+        if (confirm('EXTREME WARNING: You are initializing destructive factory reset operations. This purges all historic vectors permanently. Proceed?')) {
+            if (audioNode) { audioNode.stop(); }
+            localStorage.removeItem('apex_os_data');
+            localStorage.removeItem('apex_os_active_sport');
+            appData = getFreshDataObject();
+            saveToLocalStorage();
+            location.reload();
+        }
+    }
+
+    function saveToLocalStorage() {
+        localStorage.setItem('apex_os_data', JSON.stringify(appData));
     }
 </script>
 </body>
