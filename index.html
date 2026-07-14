@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apex Performance OS</title>
+    <title>Apex Tracker</title>
     <style>
         :root {
             --bg-main: #0b0f19;
@@ -15,6 +15,8 @@
             --accent-glow: rgba(79, 70, 229, 0.4);
             --success: #10b981;
             --danger: #ef4444;
+            --gold: #f59e0b;
+            --gold-glow: rgba(245, 158, 11, 0.3);
         }
 
         body {
@@ -104,7 +106,23 @@
             text-transform: uppercase;
             letter-spacing: 2px;
             font-weight: 700;
-            margin-bottom: 60px;
+            margin-bottom: 40px;
+        }
+
+        /* Points Pill Widget */
+        .points-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            color: var(--gold);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 13px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 12px var(--gold-glow);
         }
 
         .global-stat-box {
@@ -112,7 +130,7 @@
             border: 1px solid rgba(255, 255, 255, 0.05);
             padding: 30px 20px;
             border-radius: 24px;
-            margin-bottom: 80px;
+            margin-bottom: 60px;
             backdrop-filter: blur(10px);
         }
 
@@ -218,6 +236,43 @@
             font-size: 40px;
             font-weight: 800;
             color: var(--text-main);
+        }
+
+        /* REWARDS SECTION */
+        .rewards-section {
+            background: linear-gradient(135deg, #1e150a 0%, #110f0a 100%);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .rewards-text h4 {
+            margin: 0 0 2px 0;
+            font-size: 14px;
+            color: #ffffff;
+        }
+        .rewards-text p {
+            margin: 0;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        .ad-btn {
+            background: var(--gold);
+            color: #000000;
+            border: none;
+            padding: 10px 14px;
+            font-weight: 700;
+            font-size: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px var(--gold-glow);
+            transition: transform 0.2s ease;
+        }
+        .ad-btn:hover {
+            transform: scale(1.03);
         }
 
         /* CHART STYLE */
@@ -518,12 +573,16 @@
 
 <!-- SCREEN 1: HOME SCREEN -->
 <div id="screen-home" class="screen active home-screen">
-    <!-- Settings Button (Gear Icon) -->
     <button class="settings-trigger" onclick="navigateTo('screen-settings')">⚙️</button>
 
-    <div class="home-title">APEX TRAX</div>
+    <div class="home-title">APEX TRACKER</div>
     <div class="home-subtitle">Performance Operating System</div>
     
+    <!-- Visual Points Counter -->
+    <div class="points-badge">
+        🪙 <span id="home-points-count">0</span> Apex Tokens
+    </div>
+
     <div class="global-stat-box">
         <div class="total-label" style="margin-bottom: 12px;">All-Time Total Volume</div>
         <div class="global-number"><span id="global-all-time-total">0</span></div>
@@ -542,25 +601,34 @@
             <button class="back-btn" onclick="navigateTo('screen-home')">← Home</button>
         </div>
         
-        <!-- Selector -->
         <div class="form-group sport-selector-group">
             <label for="sport-select">Active Profile</label>
             <select id="sport-select" class="sport-select" onchange="switchSport()">
+                <option value="Baseball">Baseball Profile</option>
                 <option value="Basketball">Basketball Profile</option>
                 <option value="Football">Football Profile</option>
                 <option value="Golf">Golf Profile</option>
                 <option value="Soccer">Soccer Profile</option>
+                <option value="Swimming">Swimming Profile</option>
                 <option value="Tennis">Tennis Profile</option>
                 <option value="Track & Field">Track & Field Profile</option>
             </select>
         </div>
 
         <div class="total-box">
-            <div class="total-label"><span id="active-sport-title">Basketball</span> Current Week</div>
+            <div class="total-label"><span id="active-sport-title">Baseball</span> Current Week</div>
             <div class="total-number"><span id="weekly-total">0</span> <span style="font-size: 20px; font-weight: 500; color: var(--text-muted);">mins</span></div>
         </div>
 
-        <!-- VISUAL DAILY COMPARISON CHART -->
+        <!-- REWARDS VAULT ZONE -->
+        <div class="rewards-section">
+            <div class="rewards-text">
+                <h4>Rewards Vault</h4>
+                <p>Balance: <strong style="color: var(--gold);"><span id="workspace-points-count">0</span> Tokens</strong></p>
+            </div>
+            <button class="ad-btn" onclick="simulateAdWatch()">📺 Watch Ad (+50)</button>
+        </div>
+
         <div class="chart-section">
             <div class="chart-title">Daily Metric Comparison</div>
             <div class="chart-container">
@@ -581,7 +649,6 @@
             <div id="history-weeks-container"></div>
         </div>
 
-        <!-- Form Elements -->
         <div class="form-group">
             <label for="day">Day of the Week</label>
             <select id="day">
@@ -628,16 +695,13 @@
             <label style="color: #ffffff; font-size: 16px; margin-bottom: 4px;">🗂️ Global Data Folders</label>
             <p style="color: var(--text-muted); font-size: 13px; margin: 0 0 16px 0;">Calculates total minutes (active week + archived weeks) and organizes every session statement recorded.</p>
             
-            <div id="vault-folders-wrapper">
-                <!-- Folders generated instantly via JS -->
-            </div>
+            <div id="vault-folders-wrapper"></div>
         </div>
 
         <div class="setting-btn-row">
             <button class="history-toggle-btn" style="background: rgba(79, 70, 229, 0.1); color: #a5b4fc; margin-bottom: 10px;" onclick="exportRawBackup()">💾 Copy Raw Data Backup</button>
-            <p style="color: #64748b; font-size: 11px; text-align: center; margin: 0;">Apex Trax OS • Secure LocalStorage Engine</p>
+            <p style="color: #64748b; font-size: 11px; text-align: center; margin: 0;">Apex Tracker • Secure LocalStorage Engine</p>
             
-            <!-- Small Discrete Erase Button -->
             <button class="small-reset-btn" onclick="factoryResetDatabase()">⚠️ Erase All History & Data</button>
         </div>
     </div>
@@ -645,10 +709,12 @@
 
 <script>
     const sportOptions = {
+        Baseball: ['Batting Cage / Hitting', 'Infield / Outfield Drills', 'Pitching Bullpen', 'Base Running', 'Scrimmage / Match Play', 'Strength / Weights', 'Speed & Sprints', 'Agility Drills', 'Film Session', 'Other'],
         Basketball: ['Shooting Drills', 'Dribbling & Handles', 'Scrimmage / Pick-up', 'Defensive Slides', 'Conditioning', 'Free Throws', 'Rebounding', 'Speed & Agility', 'Film Study', 'Other'],
         Football: ['Route Running', 'Strength / Weights', 'Speed & Sprints', 'Position Drills', 'Conditioning', 'Scrimmage / Playbook', 'Agility Drills', 'Tackling Technique', 'Film Session', 'Other'],
         Golf: ['Driving Range', 'Putting Green', 'Chipping Drills', 'Full 9/18 Holes', 'Iron Play', 'Swing Mechanics', 'Core Fitness', 'Course Strategy', 'Other'],
         Soccer: ['Positioning Drills', 'Conditioning / Fitness', 'Match Play / Scrimmage', 'Agility & Footwork', 'Passing & Receiving', 'Shooting / Finishing', 'Defensive Shape', 'Speed & Sprints', 'Tactical Film', 'Other'],
+        Swimming: ['Lap Endurance', 'Sprint Sets', 'Kickboard Drills', 'Turn & Start Mechanics', 'Stroke Technique', 'Core & Stability', 'Flexibility / Stretching', 'Dryland Conditioning', 'Other'],
         Tennis: ['First Serves', 'Forehand Volleys', 'Backhand Rallies', 'Footwork & Baseline', 'Match Scrimmage', 'Return Positioning', 'Slice & Spin Tech', 'Cardio Tennis', 'Other'],
         'Track & Field': ['Endurance Runs', 'Sprint Intervals', 'Core Work / Stability', 'Form Mechanics', 'Strength Training', 'Flexibility / Stretching', 'Explosive Starts', 'Agility Drills', 'Other']
     };
@@ -659,10 +725,13 @@
         return {
             nextResetTimestamp: 0, 
             historicalGrandTotal: 0, 
+            tokensBalance: 0, // <--- New state parameter to track ad rewards points safely
+            Baseball: { total: 0, logs: [], history: [], masterVault: [] },
             Basketball: { total: 0, logs: [], history: [], masterVault: [] },
             Football: { total: 0, logs: [], history: [], masterVault: [] },
             Golf: { total: 0, logs: [], history: [], masterVault: [] },
             Soccer: { total: 0, logs: [], history: [], masterVault: [] },
+            Swimming: { total: 0, logs: [], history: [], masterVault: [] },
             Tennis: { total: 0, logs: [], history: [], masterVault: [] },
             'Track & Field': { total: 0, logs: [], history: [], masterVault: [] }
         };
@@ -676,19 +745,26 @@
         const savedData = localStorage.getItem('apex_os_data');
         if (savedData) {
             appData = JSON.parse(savedData);
+            if (appData.tokensBalance === undefined) appData.tokensBalance = 0;
             Object.keys(sportOptions).forEach(sport => {
+                if(!appData[sport]) {
+                    appData[sport] = { total: 0, logs: [], history: [], masterVault: [] };
+                }
                 if(!appData[sport].masterVault) appData[sport].masterVault = [];
                 if(!appData[sport].history) appData[sport].history = [];
             });
         }
         
         const savedSport = localStorage.getItem('apex_os_active_sport');
-        if (savedSport) {
+        if (savedSport && sportOptions[savedSport]) {
             document.getElementById('sport-select').value = savedSport;
+        } else {
+            document.getElementById('sport-select').value = 'Baseball';
         }
 
         checkAndAutoArchiveWeek();
         updateGlobalHomeTotal();
+        updatePointsDisplay();
         renderSportProfile();
         buildVaultFolders();
     };
@@ -719,7 +795,7 @@
 
         if (now >= appData.nextResetTimestamp) {
             Object.keys(sportOptions).forEach(sport => {
-                if (appData[sport].total > 0) {
+                if (appData[sport] && appData[sport].total > 0) {
                     const archiveLabel = "Week ending " + new Date(appData.nextResetTimestamp).toLocaleDateString('en-US', {month:'short', day:'numeric'});
                     const pastWeekEntry = {
                         archiveDate: archiveLabel,
@@ -742,11 +818,30 @@
     function updateGlobalHomeTotal() {
         let activeWeekSum = 0;
         Object.keys(sportOptions).forEach(sport => {
-            activeWeekSum += appData[sport].total;
+            if (appData[sport]) {
+                activeWeekSum += appData[sport].total;
+            }
         });
         
         const grandTotal = (appData.historicalGrandTotal || 0) + activeWeekSum;
         document.getElementById('global-all-time-total').innerText = grandTotal;
+    }
+
+    function updatePointsDisplay() {
+        const currentBalance = appData.tokensBalance || 0;
+        document.getElementById('home-points-count').innerText = currentBalance;
+        document.getElementById('workspace-points-count').innerText = currentBalance;
+    }
+
+    function simulateAdWatch() {
+        // This simulates receiving a callback from an ad network (like Google AdMob or Unity Ads)
+        alert("Simulating Ad Playback... (In your live app, an ad network video container would present full-screen here).");
+        
+        appData.tokensBalance += 50;
+        saveToLocalStorage();
+        updatePointsDisplay();
+        
+        alert("Success! +50 Apex Tokens have been safely added to your workspace vault.");
     }
 
     function navigateTo(screenId) {
@@ -754,6 +849,7 @@
         document.getElementById(screenId).classList.add('active');
         if(screenId === 'screen-home') {
             updateGlobalHomeTotal();
+            updatePointsDisplay();
         }
         if(screenId === 'screen-settings') {
             buildVaultFolders();
@@ -873,37 +969,24 @@
             const folderArr = appData[sport].masterVault || [];
             const currentActiveWeekMins = appData[sport].total || 0;
             
-            let pastArchivedMins = 0;
-            if (appData[sport].history) {
-                appData[sport].history.forEach(h => pastArchivedMins += h.totalVolume);
+            let archivedSum = 0;
+            if(appData[sport].history) {
+                appData[sport].history.forEach(w => archivedSum += w.totalVolume);
             }
-
-            const totalFolderMins = currentActiveWeekMins + pastArchivedMins;
+            const overallMins = currentActiveWeekMins + archivedSum;
 
             const folder = document.createElement('div');
             folder.className = 'folder-container';
             
             folder.innerHTML = `
                 <div class="folder-header" onclick="toggleFolder(this)">
-                    <span>📂 ${sport} Archive (${folderArr.length} items)</span>
-                    <span style="font-size:13px; color:var(--success)">${totalFolderMins}m total</span>
+                    <span>📂 ${sport} Vault (${folderArr.length} logs)</span>
+                    <span style="color: #818cf8; font-size:14px;">${overallMins} total mins</span>
                 </div>
-                <div class="folder-content">
-                    <div style="background:rgba(255,255,255,0.02); padding:8px 10px; border-radius:8px; margin-bottom:10px; font-size:12px; color:var(--text-muted); display:flex; justify-content:space-between;">
-                        <span>Current Active Week: <strong>${currentActiveWeekMins}m</strong></span>
-                        <span>Archived Past Weeks: <strong>${pastArchivedMins}m</strong></span>
-                    </div>
+                <div class="folder-content" id="vault-content-${sport.replace(/[^a-zA-Z0-BA-Z0-9]/g, '')}">
                     ${folderArr.length === 0 ? 
-                        `<div style="color:var(--text-muted); font-size:12px; text-align:center; padding:12px 8px;">No individual session items statement logged in vault yet.<br><span style="font-size:11px; color:#64748b;">(Newly submitted workout sessions will stream directly here!)</span></div>` :
-                        folderArr.map(item => `
-                            <div class="vault-item">
-                                <div style="display:flex; justify-content:space-between; font-weight:700; color:#ffffff; margin-bottom:2px;">
-                                    <span>${item.day} (${item.timestamp.split(' @')[0]})</span>
-                                    <span style="color:var(--success)">+${item.duration}m</span>
-                                </div>
-                                <div style="color:var(--text-muted); font-size:12px; line-height:1.4;">Focus: ${item.activities}</div>
-                            </div>
-                        `).join('')
+                        '<div style="color:var(--text-muted); font-size:12px; text-align:center; padding:8px;">Vault is clean. No historic logs saved.</div>' : 
+                        folderArr.map(item => `<div class="vault-item"><strong>${item.timestamp}</strong> — Spent ${item.duration} mins on <em>${item.activities}</em> (${item.day})</div>`).join('')
                     }
                 </div>
             `;
@@ -912,22 +995,32 @@
     }
 
     function toggleFolder(headerElement) {
-        const content = headerElement.nextElementSibling;
-        const isOpen = content.style.display === 'block';
-        content.style.display = isOpen ? 'none' : 'block';
+        const contentPanel = headerElement.nextElementSibling;
+        const isOpen = contentPanel.style.display === 'block';
+        contentPanel.style.display = isOpen ? 'none' : 'block';
     }
 
-    function toggleHistoryView() {
-        const section = document.getElementById('history-archive-section');
-        const btn = document.getElementById('history-toggle-btn');
-        viewingHistory = !viewingHistory;
-        
-        if (viewingHistory) {
-            section.style.display = 'block';
-            btn.innerText = '✕ Close History View';
+    function toggleOption(chipElement, activityName) {
+        if (activityName === 'Other') {
+            const wrapper = document.getElementById('custom-activity-wrapper');
+            if (chipElement.classList.contains('selected')) {
+                chipElement.classList.remove('selected');
+                wrapper.style.display = 'none';
+                selectedActivities = selectedActivities.filter(a => a !== 'Other');
+            } else {
+                chipElement.classList.add('selected');
+                wrapper.style.display = 'block';
+                selectedActivities.push('Other');
+            }
+            return;
+        }
+
+        if (chipElement.classList.contains('selected')) {
+            chipElement.classList.remove('selected');
+            selectedActivities = selectedActivities.filter(a => a !== activityName);
         } else {
-            section.style.display = 'none';
-            btn.innerText = '📊 View Past Weeks Archive';
+            chipElement.classList.add('selected');
+            selectedActivities.push(activityName);
         }
     }
 
@@ -937,98 +1030,92 @@
         renderSportProfile();
     }
 
-    function toggleOption(element, activityName) {
-        if (element.classList.contains('selected')) {
-            element.classList.remove('selected');
-            selectedActivities = selectedActivities.filter(item => item !== activityName);
-        } else {
-            element.classList.add('selected');
-            selectedActivities.push(activityName);
-        }
-
-        const customWrapper = document.getElementById('custom-activity-wrapper');
-        if (selectedActivities.includes('Other')) {
-            customWrapper.style.display = 'block';
-        } else {
-            customWrapper.style.display = 'none';
-        }
-    }
-
     function logSession() {
         const currentSport = document.getElementById('sport-select').value;
-        const daySelect = document.getElementById('day');
-        const durationInput = document.getElementById('duration');
-        const customActivityInput = document.getElementById('custom-activity');
+        const dayInput = document.getElementById('day').value;
+        const durationInput = parseInt(document.getElementById('duration').value);
 
-        const day = daySelect.value;
-        const duration = parseInt(durationInput.value);
-
-        let finalActivities = [...selectedActivities];
-
-        if (finalActivities.includes('Other')) {
-            finalActivities = finalActivities.filter(item => item !== 'Other');
-            const customText = customActivityInput.value.trim();
-            if (customText) finalActivities.push(customText);
-        }
-
-        if (finalActivities.length === 0) {
-            alert("Please select at least one training focus option!");
-            return;
-        }
-        if (isNaN(duration) || duration <= 0) {
-            alert("Please enter a valid duration!");
+        if (!durationInput || durationInput <= 0) {
+            alert('Please specify a positive duration run.');
             return;
         }
 
-        const activitiesString = finalActivities.join(', ');
-        const timestampString = getFormattedTimestamp();
+        let activitySummaryList = [...selectedActivities];
+        if (activitySummaryList.includes('Other')) {
+            const customVal = document.getElementById('custom-activity').value.trim();
+            if (!customVal) {
+                alert('Please outline your custom details.');
+                return;
+            }
+            activitySummaryList = activitySummaryList.map(a => a === 'Other' ? `Custom: ${customVal}` : a);
+        }
 
-        appData[currentSport].total += duration;
-        
-        const newLog = { day, activities: activitiesString, duration, timestamp: timestampString };
+        if (activitySummaryList.length === 0) {
+            alert('Please specify at least one action index Focus point.');
+            return;
+        }
+
+        const newLog = {
+            day: dayInput,
+            activities: activitySummaryList.join(', '),
+            duration: durationInput,
+            timestamp: getFormattedTimestamp()
+        };
+
         appData[currentSport].logs.unshift(newLog);
-
-        if(!appData[currentSport].masterVault) appData[currentSport].masterVault = [];
         appData[currentSport].masterVault.unshift(newLog);
+        appData[currentSport].total += durationInput;
 
+        document.getElementById('duration').value = '';
         saveToLocalStorage();
         renderSportProfile();
-        durationInput.value = '';
-    }
-
-    function exportRawBackup() {
-        const rawString = localStorage.getItem('apex_os_data');
-        navigator.clipboard.writeText(rawString);
-        alert("Success! Raw backup string copied safely to your clipboard.");
-    }
-
-    // THE FACTORY RESET FUNCTIONALITY
-    function factoryResetDatabase() {
-        const confirm1 = confirm("⚠️ WARNING: You are about to wipe out ALL history statements, master vault folders, and active logs across every single sport profile.\n\nAre you sure you want to completely erase everything?");
-        if (confirm1) {
-            const confirm2 = confirm("🔥 FINAL CHECK: This cannot be undone. Press OK to permanently wipe out the app database back to zero.");
-            if (confirm2) {
-                appData = getFreshDataObject();
-                saveToLocalStorage();
-                
-                // Refresh app state & view
-                updateGlobalHomeTotal();
-                renderSportProfile();
-                buildVaultFolders();
-                
-                navigateTo('screen-home');
-                alert("Database successfully reset to 0 minutes!");
-            }
-        }
     }
 
     function confirmClear() {
-        const currentSport = document.getElementById('sport-select').value;
-        const check1 = confirm(`Clear out the text feed logs for ${currentSport}? \n\n(This hides old text items from your feed but keeps your recorded minutes and graph fully intact!)`);
-        if (check1) {
+        if (confirm('Are you sure you want to completely clear out the Active Week Feed? (Historical master vault balances will remain safe inside settings).')) {
+            const currentSport = document.getElementById('sport-select').value;
             appData[currentSport].logs = [];
+            appData[currentSport].total = 0;
             saveToLocalStorage();
             renderSportProfile();
+            updateGlobalHomeTotal();
+        }
+    }
+
+    function toggleHistoryView() {
+        const view = document.getElementById('history-archive-section');
+        const btn = document.getElementById('history-toggle-btn');
+        viewingHistory = !viewingHistory;
+        if (viewingHistory) {
+            view.style.display = 'block';
+            btn.innerText = '🔼 Hide Past Weeks Archive';
+        } else {
+            view.style.display = 'none';
+            btn.innerText = '📊 View Past Weeks Archive';
+        }
+    }
+
+    function exportRawBackup() {
+        const rawString = JSON.stringify(appData);
+        navigator.clipboard.writeText(rawString).then(() => {
+            alert('System Backup Matrix copied securely to clipboard text string data payload!');
+        }).catch(() => {
+            alert('Failed to execute automatic clip routine. Please copy manually from system profile structures.');
+        });
+    }
+
+    function factoryResetDatabase() {
+        if (confirm('CRITICAL ACTION: This permanently wipes out ALL active files, global settings, automatic archives, and historic master vaults. This action is irreversible. Continue?')) {
+            appData = getFreshDataObject();
+            localStorage.removeItem('apex_os_data');
+            localStorage.removeItem('apex_os_active_sport');
+            document.getElementById('sport-select').value = 'Baseball';
+            renderSportProfile();
+            buildVaultFolders();
+            updateGlobalHomeTotal();
+            updatePointsDisplay();
+            navigateTo('screen-home');
+            alert('Apex Storage Ecosystem reset completed successfully.');
         }
     }
 
@@ -1038,3 +1125,4 @@
 </script>
 </body>
 </html>
+        
