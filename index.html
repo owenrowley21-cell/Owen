@@ -3,30 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Apex Tracker</title>
+  <title>Training Tracker</title>
   <style>
     /* ==========================================
-       1. DESIGN SYSTEM & VARIABLES
+       CLEAN, MINIMAL DESIGN (ORIGINAL STYLE)
        ========================================== */
     :root {
-      --bg-color: #0d0e12;
-      --card-bg: #161820;
-      --card-border: #232634;
-      --text-color: #f1f3f9;
-      --text-muted: #8a90a6;
-      
-      /* Glowing Neon Accents */
-      --accent-color: #00f2fe;
-      --accent-glow: rgba(0, 242, 254, 0.35);
-      --streak-color: #ff5e3a;
-      --streak-glow: rgba(255, 94, 58, 0.4);
-      
-      /* RPE Scale Colors */
-      --rpe-easy: #00e676;
-      --rpe-moderate: #ffd600;
-      --rpe-hard: #ff9100;
-      --rpe-veryhard: #ff3d00;
-      --rpe-max: #d50000;
+      --bg-color: #f4f5f7;
+      --card-bg: #ffffff;
+      --border-color: #e2e8f0;
+      --text-color: #1e293b;
+      --text-muted: #64748b;
+      --accent-color: #0284c7; /* Clean blue */
+      --streak-color: #f97316; /* Clean orange */
     }
 
     * {
@@ -39,568 +28,416 @@
     body {
       background-color: var(--bg-color);
       color: var(--text-color);
+      padding: 20px;
       display: flex;
       justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
-      padding: 20px;
     }
 
     .app-container {
       width: 100%;
-      max-width: 480px;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 24px;
-      overflow: hidden;
+      max-width: 450px;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      gap: 16px;
     }
 
-    /* ==========================================
-       2. HEADER & NAVIGATION
-       ========================================== */
     header {
-      padding: 24px 20px 16px 20px;
-      border-bottom: 1px solid var(--card-border);
       display: flex;
       justify-content: space-between;
       align-items: center;
+      padding: 8px 4px;
     }
 
-    .brand h1 {
-      font-size: 20px;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-      background: linear-gradient(135deg, #fff 30%, var(--accent-color));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .header-badges {
-      display: flex;
-      gap: 8px;
+    h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #0f172a;
     }
 
     .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
       padding: 6px 12px;
+      background: #e2e8f0;
       border-radius: 20px;
-      font-size: 12px;
-      font-weight: 700;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--card-border);
-    }
-
-    .badge.streak-badge {
-      color: var(--streak-color);
-      background: rgba(255, 94, 58, 0.1);
-      border-color: rgba(255, 94, 58, 0.2);
-      box-shadow: 0 0 10px var(--streak-glow);
-    }
-
-    nav {
-      display: flex;
-      background: rgba(255, 255, 255, 0.02);
-      border-bottom: 1px solid var(--card-border);
-    }
-
-    .nav-tab {
-      flex: 1;
-      text-align: center;
-      padding: 14px;
       font-size: 13px;
       font-weight: 600;
-      color: var(--text-muted);
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-      transition: all 0.2s ease;
     }
 
-    .nav-tab.active {
-      color: var(--text-color);
-      border-color: var(--accent-color);
-      background: rgba(0, 242, 254, 0.02);
-    }
-
-    /* ==========================================
-       3. SCREENS & MAIN CONTENT
-       ========================================== */
-    .screen {
-      padding: 20px;
-      display: none;
-    }
-
-    .screen.active {
-      display: block;
+    .badge.streak {
+      background: #ffedd5;
+      color: var(--streak-color);
     }
 
     .card {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid var(--card-border);
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
       border-radius: 16px;
       padding: 20px;
-      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
 
     .card h3 {
       font-size: 14px;
       text-transform: uppercase;
-      letter-spacing: 1px;
       color: var(--text-muted);
-      margin-bottom: 16px;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
     }
 
     /* ==========================================
-       PROGRESS RING LAYOUT (FEATURE 1)
+       ADDED FEATURE 1: PROGRESS RING
        ========================================== */
-    .goal-section {
+    .ring-section {
       display: flex;
       align-items: center;
-      justify-content: space-between;
       gap: 20px;
     }
 
-    .goal-ring-container {
+    .ring-container {
       position: relative;
-      width: 150px;
-      height: 150px;
+      width: 120px;
+      height: 120px;
       display: flex;
       justify-content: center;
       align-items: center;
-      flex-shrink: 0;
     }
 
-    .goal-ring-container svg {
+    .ring-container svg {
       position: absolute;
-      top: 0;
-      left: 0;
       width: 100%;
       height: 100%;
+      transform: rotate(-90deg);
     }
 
     .ring-bg {
       fill: none;
-      stroke: rgba(255, 255, 255, 0.05);
+      stroke: #f1f5f9;
     }
 
     .ring-progress {
       fill: none;
       stroke: var(--accent-color);
       stroke-linecap: round;
-      transform: rotate(-90deg);
-      transform-origin: center;
-      transition: stroke-dashoffset 0.4s ease;
-      filter: drop-shadow(0 0 6px var(--accent-glow));
+      transition: stroke-dashoffset 0.3s ease;
     }
 
     .ring-text {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      z-index: 10;
       text-align: center;
-      pointer-events: auto;
+      z-index: 5;
     }
 
-    .ring-current-min {
-      font-size: 28px;
-      font-weight: 800;
-      color: var(--text-color);
-      line-height: 1.1;
+    .current-mins {
+      font-size: 24px;
+      font-weight: 700;
+      display: block;
+      line-height: 1;
     }
 
-    .ring-divider {
+    .goal-mins {
       font-size: 12px;
       color: var(--text-muted);
-      margin: 1px 0;
-    }
-
-    .ring-goal-min {
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--accent-color);
-      border-bottom: 1px dashed var(--accent-color);
-      padding: 1px 4px;
+      border-bottom: 1px dashed var(--text-muted);
       cursor: pointer;
     }
 
-    .ring-goal-min:focus {
-      outline: none;
-      background: rgba(0, 242, 254, 0.15);
-      border-radius: 4px;
-      border-bottom-style: solid;
+    .ring-info-text h2 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 4px;
     }
 
-    .ring-label {
-      font-size: 10px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      margin-top: 3px;
-      letter-spacing: 0.5px;
-    }
-
-    .goal-stats {
-      flex: 1;
-    }
-
-    .goal-stats h2 {
-      font-size: 20px;
-      font-weight: 800;
-      margin-bottom: 6px;
-      color: var(--text-color);
-    }
-
-    .goal-stats p {
+    .ring-info-text p {
       font-size: 12px;
       color: var(--text-muted);
       line-height: 1.4;
     }
 
     /* ==========================================
-       TROPHY CASE LAYOUT (FEATURE 2)
+       ADDED FEATURE 2: TROPHY CASE
        ========================================== */
     .trophy-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
+      gap: 10px;
     }
 
     .trophy-item {
-      background: rgba(255, 255, 255, 0.01);
-      border: 1px solid var(--card-border);
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
       border-radius: 12px;
-      padding: 16px 8px;
+      padding: 12px 6px;
       text-align: center;
     }
 
     .trophy-icon {
-      font-size: 24px;
+      font-size: 20px;
       display: block;
-      margin-bottom: 8px;
-    }
-
-    .trophy-info label {
-      display: block;
-      font-size: 9px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
       margin-bottom: 4px;
     }
 
-    .trophy-info span {
-      font-size: 14px;
+    .trophy-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      display: block;
+    }
+
+    .trophy-val {
+      font-size: 13px;
       font-weight: 700;
       color: var(--text-color);
     }
 
     /* ==========================================
-       4. STOPWATCH & TRACKER ELEMENTS
+       STOPWATCH, FORM & LOGS
        ========================================== */
     .timer-display {
-      font-size: 54px;
-      font-weight: 800;
+      font-size: 40px;
+      font-weight: 700;
       text-align: center;
-      font-variant-numeric: tabular-nums;
-      margin: 20px 0;
-      letter-spacing: -1px;
+      margin: 10px 0 15px;
     }
 
-    .timer-controls {
+    .timer-btn-row {
       display: flex;
-      gap: 12px;
-      justify-content: center;
-      margin-bottom: 24px;
+      gap: 10px;
     }
 
     .btn {
-      padding: 12px 24px;
-      border-radius: 12px;
+      flex: 1;
+      padding: 10px;
+      border-radius: 10px;
+      font-weight: 600;
       font-size: 14px;
-      font-weight: 700;
-      border: none;
+      border: 1px solid var(--border-color);
+      background: #f1f5f9;
       cursor: pointer;
-      transition: all 0.2s ease;
     }
 
     .btn-primary {
       background: var(--accent-color);
-      color: #000;
-      box-shadow: 0 4px 12px var(--accent-glow);
+      color: white;
+      border: none;
     }
 
-    .btn-secondary {
-      background: rgba(255, 255, 255, 0.06);
-      color: var(--text-color);
-      border: 1px solid var(--card-border);
+    .form-group {
+      margin-bottom: 12px;
     }
 
-    .input-group {
-      margin-bottom: 16px;
-    }
-
-    .input-group label {
+    .form-group label {
       display: block;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      font-size: 12px;
+      font-weight: 600;
       color: var(--text-muted);
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
-    .form-control {
+    .input-field {
       width: 100%;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
-      padding: 12px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
       font-size: 14px;
-      color: var(--text-color);
     }
 
-    .form-control:focus {
-      outline: none;
-      border-color: var(--accent-color);
-    }
-
-    .rpe-container {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 8px;
+    .rpe-chips {
+      display: flex;
+      gap: 6px;
     }
 
     .rpe-chip {
-      padding: 10px 4px;
+      flex: 1;
+      padding: 8px 4px;
+      border: 1px solid var(--border-color);
+      background: #f8fafc;
       border-radius: 8px;
       font-size: 11px;
-      font-weight: 700;
       text-align: center;
       cursor: pointer;
-      border: 2px solid transparent;
-      background: rgba(255, 255, 255, 0.03);
-      color: var(--text-muted);
     }
 
-    .rpe-chip[data-level="easy"].selected { border-color: var(--rpe-easy); color: var(--rpe-easy); background: rgba(0, 230, 118, 0.08); }
-    .rpe-chip[data-level="moderate"].selected { border-color: var(--rpe-moderate); color: var(--rpe-moderate); background: rgba(255, 214, 0, 0.08); }
-    .rpe-chip[data-level="hard"].selected { border-color: var(--rpe-hard); color: var(--rpe-hard); background: rgba(255, 145, 0, 0.08); }
-    .rpe-chip[data-level="veryhard"].selected { border-color: var(--rpe-veryhard); color: var(--rpe-veryhard); background: rgba(255, 61, 0, 0.08); }
-    .rpe-chip[data-level="max"].selected { border-color: var(--rpe-max); color: var(--rpe-max); background: rgba(213, 0, 0, 0.08); }
-
-    /* ==========================================
-       5. VAULT LOG LISTS
-       ========================================== */
-    .log-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+    .rpe-chip.selected {
+      background: #e0f2fe;
+      border-color: var(--accent-color);
+      color: var(--accent-color);
+      font-weight: 600;
     }
 
     .log-item {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 14px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-color);
     }
 
-    .log-details h4 { font-size: 14px; font-weight: 600; }
-    .log-details span { font-size: 11px; color: var(--text-muted); }
-    .log-metrics { display: flex; align-items: center; gap: 12px; }
-    .log-duration { font-size: 15px; font-weight: 700; }
-    .log-rpe-badge { font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 6px; }
-    .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); }
-    .dangerous-btn { background: rgba(213, 0, 0, 0.1); border: 1px solid rgba(213, 0, 0, 0.2); color: var(--rpe-max); width: 100%; padding: 10px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+    .log-item:last-child {
+      border-bottom: none;
+    }
+
+    .log-info h4 {
+      font-size: 14px;
+    }
+
+    .log-info span {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .log-meta {
+      text-align: right;
+    }
+
+    .log-mins {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .log-rpe {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .clear-btn {
+      width: 100%;
+      background: transparent;
+      border: none;
+      color: #ef4444;
+      font-size: 12px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
 
   <div class="app-container">
+    
     <header>
-      <div class="brand"><h1>APEX TRACKER</h1></div>
-      <div class="header-badges">
-        <div class="badge">Owen</div>
-        <div class="badge streak-badge" id="streakBadge">🔥 0 Days</div>
+      <h1>Activity Tracker</h1>
+      <div style="display: flex; gap: 8px;">
+        <span class="badge">Owen</span>
+        <span class="badge streak" id="streakDisplay">🔥 0 Days</span>
       </div>
     </header>
 
-    <nav>
-      <div class="nav-tab active" onclick="switchTab('home')">Home</div>
-      <div class="nav-tab" onclick="switchTab('tracker')">Tracker</div>
-      <div class="nav-tab" onclick="switchTab('vault')">Vault</div>
-    </nav>
-
-    <!-- 1. HOME SCREEN -->
-    <div id="homeScreen" class="screen active">
-      
-      <!-- INTERACTIVE PROGRESS RING CARD -->
-      <div class="card">
-        <div class="goal-section">
-          <div class="goal-ring-container">
-            <svg viewBox="0 0 160 160">
-              <circle class="ring-bg" cx="80" cy="80" r="68" stroke-width="10"></circle>
-              <!-- 2 * pi * 68 = ~427.25. Setting up dashboard layout path explicitly -->
-              <circle id="progressCircle" class="ring-progress" cx="80" cy="80" r="68" stroke-width="10" stroke-dasharray="427.25" stroke-dashoffset="427.25"></circle>
-            </svg>
-            <div class="ring-text">
-              <span class="ring-current-min" id="ringCurrentMins">0</span>
-              <span class="ring-divider">/</span>
-              <span class="ring-goal-min" id="ringGoalMins" contenteditable="true">150</span>
-              <div class="ring-label">min goal</div>
-            </div>
-          </div>
-          <div class="goal-stats">
-            <h2 id="weeklyPercent">0% Done</h2>
-            <p id="weeklyContext">Establish your training consistency. Click the goal inside the ring to change your target.</p>
+    <!-- 1. THE PROGRESS RING CARD -->
+    <div class="card">
+      <div class="ring-section">
+        <div class="ring-container">
+          <svg viewBox="0 0 100 100">
+            <circle class="ring-bg" cx="50" cy="50" r="42" stroke-width="8"></circle>
+            <!-- 2 * pi * 42 = ~263.89 -->
+            <circle id="progressCircle" class="ring-progress" cx="50" cy="50" r="42" stroke-width="8" stroke-dasharray="263.89" stroke-dashoffset="263.89"></circle>
+          </svg>
+          <div class="ring-text">
+            <span class="current-mins" id="ringCurrent">0</span>
+            <span class="goal-mins" id="ringGoal" contenteditable="true">150</span>
           </div>
         </div>
-      </div>
-
-      <!-- THE TROPHY CASE CARD -->
-      <div class="card">
-        <h3>🏆 Trophy Case</h3>
-        <div class="trophy-grid">
-          <div class="trophy-item">
-            <span class="trophy-icon">🔥</span>
-            <div class="trophy-info">
-              <label>Record Streak</label>
-              <span id="recordStreak">0 Days</span>
-            </div>
-          </div>
-          <div class="trophy-item">
-            <span class="trophy-icon">⏱️</span>
-            <div class="trophy-info">
-              <label>Longest Set</label>
-              <span id="recordDuration">0 min</span>
-            </div>
-          </div>
-          <div class="trophy-item">
-            <span class="trophy-icon">⚡</span>
-            <div class="trophy-info">
-              <label>Peak Effort</label>
-              <span id="recordRPE">RPE 0</span>
-            </div>
-          </div>
+        <div class="ring-info-text">
+          <h2 id="weeklyPercent">0% Done</h2>
+          <p id="weeklyContext">Establish your training consistency. Tap the goal inside the ring to change it.</p>
         </div>
-      </div>
-
-    </div>
-
-    <!-- 2. TRACKER WORKSPACE SCREEN -->
-    <div id="trackerScreen" class="screen">
-      <div class="card">
-        <h3>⏱ Honor Timer</h3>
-        <div class="timer-display" id="stopwatchDisplay">00:00</div>
-        <div class="timer-controls">
-          <button class="btn btn-primary" id="startBtn" onclick="toggleTimer()">Start</button>
-          <button class="btn btn-secondary" onclick="resetTimer()">Reset</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <h3>📝 Session Logging</h3>
-        <div class="input-group">
-          <label for="workoutActivity">Activity</label>
-          <input type="text" id="workoutActivity" class="form-control" placeholder="Soccer drills, conditioning, lifting...">
-        </div>
-        <div class="input-group">
-          <label for="manualMinutes">Duration (Minutes)</label>
-          <input type="number" id="manualMinutes" class="form-control" placeholder="30" min="1">
-        </div>
-        <div class="input-group">
-          <label>Intensity (RPE Scale)</label>
-          <div class="rpe-container">
-            <div class="rpe-chip" data-level="easy" onclick="selectRPE('easy', 2)">1-2<br>Easy</div>
-            <div class="rpe-chip" data-level="moderate" onclick="selectRPE('moderate', 4)">3-4<br>Mod</div>
-            <div class="rpe-chip" data-level="hard" onclick="selectRPE('hard', 6)">5-6<br>Hard</div>
-            <div class="rpe-chip" data-level="veryhard" onclick="selectRPE('veryhard', 8)">7-8<br>V.Hard</div>
-            <div class="rpe-chip" data-level="max" onclick="selectRPE('max', 10)">9-10<br>Max</div>
-          </div>
-        </div>
-        <button class="btn btn-primary" style="width: 100%; margin-top: 10px;" onclick="logSession()">Commit Session</button>
       </div>
     </div>
 
-    <!-- 3. VAULT SCREEN -->
-    <div id="vaultScreen" class="screen">
-      <div class="card">
-        <h3>📁 All Logged Sessions</h3>
-        <div class="log-list" id="logList"></div>
+    <!-- 2. TROPHY CASE -->
+    <div class="card">
+      <h3>🏆 Trophy Case</h3>
+      <div class="trophy-grid">
+        <div class="trophy-item">
+          <span class="trophy-icon">🔥</span>
+          <span class="trophy-label">Best Streak</span>
+          <span class="trophy-val" id="recordStreak">0 Days</span>
+        </div>
+        <div class="trophy-item">
+          <span class="trophy-icon">⏱️</span>
+          <span class="trophy-label">Longest Set</span>
+          <span class="trophy-val" id="recordDuration">0 min</span>
+        </div>
+        <div class="trophy-item">
+          <span class="trophy-icon">⚡</span>
+          <span class="trophy-label">Peak Effort</span>
+          <span class="trophy-val" id="recordRPE">RPE 0</span>
+        </div>
       </div>
-      <div class="card">
-        <h3>⚠️ Danger Zone</h3>
-        <button class="dangerous-btn" onclick="clearAllData()">Reset All App Data</button>
+    </div>
+
+    <!-- 3. STOPWATCH & FORM -->
+    <div class="card">
+      <h3>⏱️ Honor Timer</h3>
+      <div class="timer-display" id="timerDisplay">00:00</div>
+      <div class="timer-btn-row">
+        <button class="btn btn-primary" id="timerBtn" onclick="toggleTimer()">Start</button>
+        <button class="btn" onclick="resetTimer()">Reset</button>
       </div>
+
+      <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 20px 0;">
+
+      <h3>📝 Log Session</h3>
+      <div class="form-group">
+        <label>Activity</label>
+        <input type="text" id="activityInput" class="input-field" placeholder="Soccer drills, fitness...">
+      </div>
+      <div class="form-group">
+        <label>Duration (Minutes)</label>
+        <input type="number" id="minutesInput" class="input-field" placeholder="30">
+      </div>
+      <div class="form-group">
+        <label>Intensity (RPE Scale)</label>
+        <div class="rpe-chips">
+          <div class="rpe-chip" onclick="selectRPE(2)">1-2<br>Easy</div>
+          <div class="rpe-chip" onclick="selectRPE(5)">5-6<br>Mod</div>
+          <div class="rpe-chip" onclick="selectRPE(8)">8-9<br>Hard</div>
+          <div class="rpe-chip" onclick="selectRPE(10)">10<br>Max</div>
+        </div>
+      </div>
+      <button class="btn btn-primary" style="width: 100%; margin-top: 8px;" onclick="logSession()">Save Log</button>
+    </div>
+
+    <!-- 4. PAST LOGS -->
+    <div class="card">
+      <h3>📁 History Vault</h3>
+      <div id="logContainer"></div>
+      <button class="clear-btn" onclick="clearData()">Clear All Data</button>
     </div>
 
   </div>
 
-  <!-- ==========================================
-       6. APPLICATION JAVASCRIPT ENGINE
-       ========================================== */ -->
   <script>
     let history = JSON.parse(localStorage.getItem('workoutHistory')) || [];
     let activeRPE = null;
-    let rpeNumValue = 0;
     let timerInterval = null;
     let timerSeconds = 0;
     let isRunning = false;
     let weeklyGoal = parseInt(localStorage.getItem('weeklyMinGoal')) || 150;
 
-    const rpeClassMap = {
-      2: { text: 'EASY', bg: 'rgba(0, 230, 118, 0.1)', color: 'var(--rpe-easy)' },
-      4: { text: 'MODERATE', bg: 'rgba(255, 214, 0, 0.1)', color: 'var(--rpe-moderate)' },
-      6: { text: 'HARD', bg: 'rgba(255, 145, 0, 0.1)', color: 'var(--rpe-hard)' },
-      8: { text: 'V. HARD', bg: 'rgba(255, 61, 0, 0.1)', color: 'var(--rpe-veryhard)' },
-      10: { text: 'MAX EFFORT', bg: 'rgba(213, 0, 0, 0.1)', color: 'var(--rpe-max)' }
-    };
-
     window.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('ringGoalMins').innerText = weeklyGoal;
+      document.getElementById('ringGoal').innerText = weeklyGoal;
       setupGoalRingEditable();
       recalculateStreak();
       updateDashboardUI();
+      renderLogs();
     });
 
-    function switchTab(tabId) {
-      document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
-      document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
-
-      if (tabId === 'home') {
-        document.querySelector('nav div:nth-child(1)').classList.add('active');
-        document.getElementById('homeScreen').classList.add('active');
-        updateDashboardUI();
-      } else if (tabId === 'tracker') {
-        document.querySelector('nav div:nth-child(2)').classList.add('active');
-        document.getElementById('trackerScreen').classList.add('active');
-      } else if (tabId === 'vault') {
-        document.querySelector('nav div:nth-child(3)').classList.add('active');
-        document.getElementById('vaultScreen').classList.add('active');
-        renderLogs();
-      }
-    }
-
     function toggleTimer() {
-      const startBtn = document.getElementById('startBtn');
+      const timerBtn = document.getElementById('timerBtn');
       if (isRunning) {
         clearInterval(timerInterval);
         isRunning = false;
-        startBtn.innerText = 'Resume';
+        timerBtn.innerText = 'Resume';
       } else {
         isRunning = true;
-        startBtn.innerText = 'Pause';
+        timerBtn.innerText = 'Pause';
         timerInterval = setInterval(() => {
           timerSeconds++;
-          updateTimerDisplay();
+          const mins = Math.floor(timerSeconds / 60).toString().padStart(2, '0');
+          const secs = (timerSeconds % 60).toString().padStart(2, '0');
+          document.getElementById('timerDisplay').innerText = `${mins}:${secs}`;
+          
           const currentMins = Math.floor(timerSeconds / 60);
           if (currentMins > 0) {
-            document.getElementById('manualMinutes').value = currentMins;
+            document.getElementById('minutesInput').value = currentMins;
           }
         }, 1000);
       }
@@ -610,60 +447,51 @@
       clearInterval(timerInterval);
       timerSeconds = 0;
       isRunning = false;
-      updateTimerDisplay();
-      document.getElementById('startBtn').innerText = 'Start';
-      document.getElementById('manualMinutes').value = '';
+      document.getElementById('timerDisplay').innerText = '00:00';
+      document.getElementById('timerBtn').innerText = 'Start';
+      document.getElementById('minutesInput').value = '';
     }
 
-    function updateTimerDisplay() {
-      const mins = Math.floor(timerSeconds / 60).toString().padStart(2, '0');
-      const secs = (timerSeconds % 60).toString().padStart(2, '0');
-      document.getElementById('stopwatchDisplay').innerText = `${mins}:${secs}`;
-    }
-
-    function selectRPE(level, value) {
-      activeRPE = level;
-      rpeNumValue = value;
+    function selectRPE(value) {
+      activeRPE = value;
       document.querySelectorAll('.rpe-chip').forEach(chip => chip.classList.remove('selected'));
-      document.querySelector(`.rpe-chip[data-level="${level}"]`).classList.add('selected');
+      event.currentTarget.classList.add('selected');
     }
 
     function logSession() {
-      const activityInput = document.getElementById('workoutActivity');
-      const minutesInput = document.getElementById('manualMinutes');
-      const activity = activityInput.value.trim() || "Physical Training";
-      const duration = parseInt(minutesInput.value);
+      const actVal = document.getElementById('activityInput').value.trim() || "Workout";
+      const minVal = parseInt(document.getElementById('minutesInput').value);
 
-      if (!duration || duration <= 0) {
-        alert("Please track or enter a valid duration!");
+      if (!minVal || minVal <= 0) {
+        alert("Please enter a valid duration!");
         return;
       }
       if (!activeRPE) {
-        alert("Please select your session intensity (RPE).");
+        alert("Please select your intensity (RPE).");
         return;
       }
 
       const newSession = {
         id: Date.now(),
         date: new Date().toISOString(),
-        activity: activity,
-        duration: duration,
-        rpe: rpeNumValue
+        activity: actVal,
+        duration: minVal,
+        rpe: activeRPE
       };
 
       history.unshift(newSession);
       localStorage.setItem('workoutHistory', JSON.stringify(history));
 
-      alert("Session logged successfully!");
-      activityInput.value = "";
-      minutesInput.value = "";
+      alert("Logged successfully!");
+      document.getElementById('activityInput').value = "";
+      document.getElementById('minutesInput').value = "";
       resetTimer();
       document.querySelectorAll('.rpe-chip').forEach(chip => chip.classList.remove('selected'));
       activeRPE = null;
-      rpeNumValue = 0;
 
       recalculateStreak();
-      switchTab('home');
+      updateDashboardUI();
+      renderLogs();
     }
 
     function recalculateStreak() {
@@ -693,15 +521,15 @@
     }
 
     function updateStreakDisplay(count) {
-      document.getElementById('streakBadge').innerText = `🔥 ${count} Day${count !== 1 ? 's' : ''}`;
+      document.getElementById('streakDisplay').innerText = `🔥 ${count} Day${count !== 1 ? 's' : ''}`;
     }
 
     function updateDashboardUI() {
       const currentWeeklyMins = calculateCurrentWeeklyMinutes();
-      document.getElementById('ringCurrentMins').innerText = currentWeeklyMins;
+      document.getElementById('ringCurrent').innerText = currentWeeklyMins;
       
       const ringCircle = document.getElementById('progressCircle');
-      const perimeter = 427.25;
+      const perimeter = 263.89;
       let percent = weeklyGoal > 0 ? (currentWeeklyMins / weeklyGoal) : 0;
       if (percent > 1) percent = 1;
       
@@ -712,10 +540,10 @@
       
       const weeklyContext = document.getElementById('weeklyContext');
       if (percentLabel >= 100) {
-        weeklyContext.innerText = "Weekly target secured! Absolute masterclass consistency.";
+        weeklyContext.innerText = "Weekly target complete! Outstanding work.";
       } else {
         const minsLeft = weeklyGoal - currentWeeklyMins;
-        weeklyContext.innerText = `You need ${minsLeft > 0 ? minsLeft : 0} more minutes to hit your clear weekly baseline goal.`;
+        weeklyContext.innerText = `You need ${minsLeft > 0 ? minsLeft : 0} more minutes to hit your goal.`;
       }
 
       const maxStreak = localStorage.getItem('allTimeStreak') || 0;
@@ -749,7 +577,7 @@
     }
 
     function setupGoalRingEditable() {
-      const goalEl = document.getElementById('ringGoalMins');
+      const goalEl = document.getElementById('ringGoal');
       goalEl.addEventListener('blur', () => {
         let value = parseInt(goalEl.innerText.trim());
         if (isNaN(value) || value <= 0) value = 150;
@@ -764,29 +592,26 @@
     }
 
     function renderLogs() {
-      const container = document.getElementById('logList');
+      const container = document.getElementById('logContainer');
       container.innerHTML = '';
       if (history.length === 0) {
-        container.innerHTML = `<div class="empty-state">No sessions cataloged in the Vault yet.</div>`;
+        container.innerHTML = `<div style="text-align: center; padding: 20px 0; color: var(--text-muted); font-size: 13px;">No logged runs or sessions yet.</div>`;
         return;
       }
       history.forEach(session => {
-        const dateObj = new Date(session.date);
-        const formattedDate = dateObj.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) + ' at ' + dateObj.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
-        const rpeStyle = rpeClassMap[session.rpe] || { text: 'N/A', bg: 'rgba(255,255,255,0.1)', color: '#fff' };
-
+        const d = new Date(session.date);
+        const formattedDate = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+        
         const logItem = document.createElement('div');
         logItem.className = 'log-item';
         logItem.innerHTML = `
-          <div class="log-details">
+          <div class="log-info">
             <h4>${escapeHTML(session.activity)}</h4>
             <span>${formattedDate}</span>
           </div>
-          <div class="log-metrics">
-            <span class="log-duration">${session.duration} min</span>
-            <span class="log-rpe-badge" style="background: ${rpeStyle.bg}; color: ${rpeStyle.color}; border: 1px solid ${rpeStyle.color}">
-              ${rpeStyle.text}
-            </span>
+          <div class="log-meta">
+            <span class="log-mins">${session.duration} min</span>
+            <div class="log-rpe">RPE ${session.rpe}</div>
           </div>
         `;
         container.appendChild(logItem);
@@ -797,16 +622,16 @@
       return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
     }
 
-    function clearAllData() {
-      if (confirm("Are you absolutely sure you want to purge all workouts, streaks, and trophies?")) {
+    function clearData() {
+      if (confirm("Are you sure you want to clear all data?")) {
         localStorage.clear();
         history = [];
         weeklyGoal = 150;
-        document.getElementById('ringGoalMins').innerText = 150;
+        document.getElementById('ringGoal').innerText = 150;
         resetTimer();
         recalculateStreak();
         updateDashboardUI();
-        switchTab('home');
+        renderLogs();
       }
     }
   </script>
