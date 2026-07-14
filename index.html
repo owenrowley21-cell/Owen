@@ -1,594 +1,1172 @@
-const sportOptions = {
-    Baseball: ['Batting Cage / Hitting', 'Infield / Outfield Drills', 'Pitching Bullpen', 'Base Running', 'Scrimmage / Match Play', 'Strength / Weights', 'Speed & Sprints', 'Agility Drills', 'Film Session', 'Other'],
-    Basketball: ['Shooting Drills', 'Dribbling & Handles', 'Scrimmage / Pick-up', 'Defensive Slides', 'Conditioning', 'Free Throws', 'Rebounding', 'Speed & Agility', 'Film Study', 'Other'],
-    Football: ['Route Running', 'Strength / Weights', 'Speed & Sprints', 'Position Drills', 'Conditioning', 'Scrimmage / Playbook', 'Agility Drills', 'Tackling Technique', 'Film Session', 'Other'],
-    Golf: ['Driving Range', 'Putting Green', 'Chipping Drills', 'Full 9/18 Holes', 'Iron Play', 'Swing Mechanics', 'Core Fitness', 'Course Management', 'Other'],
-    Soccer: ['Technical Dribbling', 'Passing & Receiving', 'Shooting & Finishing', 'Scrimmage / Match Play', 'Speed & Agility', 'Position Tactics', 'Core & Strength', 'Match Analysis', 'Other'],
-    Swimming: ['Endurance Laps', 'Sprint Intervals', 'Stroke Technique', 'Kick Sets', 'Turns & Starts', 'Dryland Training', 'Breath Control', 'Other'],
-    Tennis: ['Serve Practice', 'Groundstrokes (Fore/Back)', 'Volleys & Overhead', 'Match Play', 'Footwork & Agility', 'Cardio Tennis', 'Other'],
-    "Track & Field": ['Sprints / Acceleration', 'Long Distance Run', 'Interval / Tempo Training', 'Jumping Drills', 'Throwing Technique', 'Blocks & Starts', 'Core & Mobility', 'Other']
-};
-
-// --- DATABASE STATE ENGINE ---
-let appState = {
-    selectedSport: 'Baseball',
-    selectedActivities: [],
-    selectedRpe: null,
-    currentWeekLogs: [], // Active session cards logged this week
-    archivedWeeks: [],   // Auto-archived weekly totals: { id, weekEnding, sport, minutes }
-    allTimeLogs: [],     // Permanent sequential database of every session ever logged
-    streakCount: 0,
-    lastActiveDate: null
-};
-
-// --- STOPWATCH ENGINE ---
-let stopwatchInterval = null;
-let stopwatchSeconds = 0;
-
-// --- INITIALIZATION ---
-window.addEventListener('DOMContentLoaded', () => {
-    loadDatabase();
-    setDefaultWeekDay();
-    switchSport();
-    renderAllTimeTotal();
-    renderStreak();
-    populateVault();
-});
-
-// Navigation Engine
-function navigateTo(screenId) {
-    document.querySelectorAll('.screen').forEach(screen => {
-        screen.classList.remove('active');
-    });
-    document.getElementById(screenId).classList.add('active');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apex Tracker</title>
     
-    if (screenId === 'screen-tracker') {
-        renderWeeklyChart();
-    }
-    if (screenId === 'screen-settings') {
-        populateVault();
-    }
-}
+    <!-- Mobile Web App & High-Contrast Colorful App Icon Headers -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 180 180%22><defs><linearGradient id=%22g%22 x1=%220%25%22 y1=%220%25%22 x2=%22100%25%22 y2=%22100%25%22><stop offset=%220%25%22 stop-color=%22%234f46e5%22/><stop offset=%2250%25%22 stop-color=%22%2306b6d4%22/><stop offset=%22100%25%22 stop-color=%22%2310b981%22/></linearGradient><filter id=%22glow%22><feGaussianBlur stdDeviation=%225%22 result=%22coloredBlur%22/><feMerge><feMergeNode in=%22coloredBlur%22/><feMergeNode in=%22SourceGraphic%22/></feMerge></filter></defs><rect width=%22180%22 height=%22180%22 rx=%2240%22 fill=%22%230b0f19%22/><rect width=%22172%22 height=%22172%22 x=%224%22 y=%224%22 rx=%2236%22 fill=%22none%22 stroke=%22url(%23g)%22 stroke-width=%224%22 opacity=%220.8%22/><path d=%22M90 35 L135 130 L110 130 L90 85 L70 130 L45 130 Z%22 fill=%22url(%23g)%22 filter=%22url(%23glow)%22/><path d=%22M73 95 L107 95%22 stroke=%22%23ffffff%22 stroke-width=%225%22 stroke-linecap=%22round%22/></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 180 180%22><defs><linearGradient id=%22g%22 x1=%220%25%22 y1=%220%25%22 x2=%22100%25%22 y2=%22100%25%22><stop offset=%220%25%22 stop-color=%22%234f46e5%22/><stop offset=%2250%25%22 stop-color=%22%2306b6d4%22/><stop offset=%22100%25%22 stop-color=%22%2310b981%22/></linearGradient></defs><rect width=%22180%22 height=%22180%22 rx=%2240%22 fill=%22%230b0f19%22/><path d=%22M90 35 L135 130 L110 130 L90 85 L70 130 L45 130 Z%22 fill=%22url(%23g)%22/><path d=%22M73 95 L107 95%22 stroke=%22%23ffffff%22 stroke-width=%225%22 stroke-linecap=%22round%22/></svg>">
 
-// LocalStorage Handlers
-function saveDatabase() {
-    localStorage.setItem('apex_tracker_db', JSON.stringify(appState));
-}
+    <style>
+        :root {
+            --bg-main: #0b0f19;
+            --bg-card: #161b26;
+            --bg-input: #1f2635;
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+            --accent: #4f46e5;
+            --accent-glow: rgba(79, 70, 229, 0.4);
+            --success: #10b981;
+            --danger: #ef4444;
+        }
 
-function loadDatabase() {
-    const rawData = localStorage.getItem('apex_tracker_db');
-    if (rawData) {
-        try {
-            const parsed = JSON.parse(rawData);
-            appState = { ...appState, ...parsed };
-            checkAndCalculateStreak();
-        } catch (e) {
-            console.error("Failed to parse database, resetting to default state.", e);
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            max-width: 540px;
+            margin: 0 auto;
+            padding: 20px;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        /* Screen Wrapper Animations */
+        .screen {
+            display: none;
+            animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .screen.active {
+            display: block;
+        }
+
+        /* HOME SCREEN SPECIFIC STYLE */
+        .home-screen {
+            position: relative;
+            background: linear-gradient(135deg, #111827 0%, #070a10 100%);
+            padding: 40px 24px;
+            border-radius: 32px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        .home-screen::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            opacity: 0.04;
+            background-image: 
+                radial-gradient(circle at 20% 20%, transparent 50%, #fff 52%, transparent 55%),
+                radial-gradient(circle at 80% 40%, transparent 40%, #fff 42%, transparent 45%),
+                linear-gradient(45deg, transparent 45%, #fff 48%, #fff 52%, transparent 55%);
+            background-size: 120px 120px;
+            pointer-events: none;
+        }
+
+        /* Settings Header Button */
+        .settings-trigger {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-muted);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.2s ease;
+            z-index: 10;
+        }
+        .settings-trigger:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(45deg);
+        }
+
+        .home-title {
+            font-size: 36px;
+            font-weight: 900;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+            margin-top: 20px;
+            background: linear-gradient(135deg, #ffffff 0%, #64748b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .home-subtitle {
+            color: var(--text-muted);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+            margin-bottom: 40px;
+        }
+
+        .global-stat-box {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 30px 20px;
+            border-radius: 24px;
+            margin-bottom: 60px;
+            backdrop-filter: blur(10px);
+        }
+
+        .global-number {
+            font-size: 56px;
+            font-weight: 900;
+            letter-spacing: -2px;
+            color: #ffffff;
+            text-shadow: 0 0 30px rgba(255,255,255,0.1);
+        }
+
+        button.launch-btn {
+            width: 100%;
+            background: var(--text-main);
+            color: var(--bg-main);
+            border: none;
+            padding: 20px;
+            font-weight: 800;
+            border-radius: 18px;
+            cursor: pointer;
+            font-size: 18px;
+            letter-spacing: -0.2px;
+            transition: all 0.25s ease;
+            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.1);
+        }
+
+        button.launch-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 12px 30px rgba(255, 255, 255, 0.2);
+        }
+
+        /* GENERAL PANEL SETTINGS */
+        .dashboard {
+            background: var(--bg-card);
+            padding: 30px 24px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 800;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 8px 14px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .sport-selector-group {
+            margin-bottom: 24px;
+        }
+        
+        .sport-select {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--accent);
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 12px var(--accent-glow);
+            color: var(--text-main);
+            border-radius: 12px;
+            font-size: 16px;
+        }
+
+        .total-box {
+            background: linear-gradient(135deg, #1e1b4b 0%, #111827 100%);
+            border: 1px solid rgba(79, 70, 229, 0.3);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            text-align: center;
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .total-label {
+            color: var(--text-muted);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .total-number {
+            font-size: 40px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        /* STOPWATCH TIMER WIDGET CSS */
+        .timer-widget {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        .timer-display {
+            font-size: 32px;
+            font-weight: 800;
+            font-family: monospace;
+            color: #ffffff;
+            letter-spacing: 1px;
+            margin: 8px 0 16px 0;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+        }
+        .timer-controls {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+        .timer-btn {
+            background: var(--bg-input);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-main);
+            padding: 10px 16px;
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .timer-btn.start {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border-color: rgba(16, 185, 129, 0.2);
+        }
+        .timer-btn.pause {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+            border-color: rgba(245, 158, 11, 0.2);
+        }
+        .timer-btn.apply {
+            background: var(--accent);
+            color: #ffffff;
+            border: none;
+            box-shadow: 0 4px 10px var(--accent-glow);
+        }
+        .timer-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        /* CHART STYLE */
+        .chart-section {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+        .chart-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+        }
+        .chart-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            height: 120px;
+            padding-top: 10px;
+        }
+        .chart-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+        .chart-bar-wrapper {
+            height: 90px;
+            width: 100%;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            margin-bottom: 8px;
+        }
+        .chart-bar {
+            width: 24px;
+            background: linear-gradient(0deg, var(--accent) 0%, #818cf8 100%);
+            border-radius: 6px 6px 2px 2px;
+            height: 0%;
+            transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+        .chart-bar:hover .chart-tooltip {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-4px);
+        }
+        .chart-tooltip {
+            position: absolute;
+            top: -26px;
+            left: 50%;
+            transform: translateX(-50%) translateY(0);
+            background: #1e293b;
+            color: #ffffff;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .chart-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .history-toggle-btn {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-muted);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13px;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        select, input {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--bg-input);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            color: var(--text-main);
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .option-chip {
+            background: var(--bg-input);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            transition: all 0.2s ease;
+        }
+
+        .option-chip.selected {
+            background: rgba(79, 70, 229, 0.2);
+            border-color: var(--accent);
+            color: #a5b4fc;
+        }
+
+        #custom-activity-wrapper {
+            margin-top: 12px;
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        button.submit-btn {
+            flex: 2;
+            background: var(--text-main);
+            color: var(--bg-main);
+            border: none;
+            padding: 16px;
+            font-weight: 700;
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button.clear-btn {
+            flex: 1;
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            padding: 16px;
+            font-weight: 700;
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .log-list {
+            margin-top: 32px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 24px;
+        }
+
+        .log-list h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .log-item {
+            background: var(--bg-input);
+            padding: 16px;
+            border-radius: 14px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .log-day { font-weight: 700; font-size: 15px; }
+        .log-activity { color: var(--text-muted); font-size: 13px; max-width: 320px; }
+        .log-time-stamp { font-size: 11px; color: #64748b; margin-top: 4px; }
+        
+        .log-time {
+            font-weight: 700;
+            color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .history-card {
+            background: #1e293b;
+            padding: 14px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .history-week-title {
+            font-weight: 700;
+            font-size: 15px;
+            color: #a5b4fc;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* SETTINGS & ALL TIME HISTORY FOLDERS */
+        .folder-container {
+            margin-bottom: 16px;
+            border-radius: 14px;
+            background: var(--bg-input);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+        }
+
+        .folder-header {
+            padding: 16px;
+            background: rgba(255,255,255,0.02);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            font-size: 15px;
+            transition: background 0.2s ease;
+        }
+
+        .folder-header:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .folder-content {
+            display: none;
+            padding: 12px;
+            background: rgba(0,0,0,0.15);
+            border-top: 1px solid rgba(255,255,255,0.03);
+            max-height: 260px;
+            overflow-y: auto;
+        }
+
+        .vault-item {
+            padding: 10px 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            font-size: 13px;
+        }
+        .vault-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-btn-row {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+
+        /* Discrete Small Reset Button */
+        .small-reset-btn {
+            background: transparent;
+            color: #ef4444;
+            border: 1px dashed rgba(239, 68, 68, 0.3);
+            padding: 6px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            display: block;
+            margin: 20px auto 0 auto;
+            transition: all 0.2s ease;
+            opacity: 0.6;
+        }
+        .small-reset-btn:hover {
+            opacity: 1;
+            background: rgba(239, 68, 68, 0.08);
+            border-color: #ef4444;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<!-- SCREEN 1: HOME SCREEN -->
+<div id="screen-home" class="screen active home-screen">
+    <button class="settings-trigger" onclick="navigateTo('screen-settings')">⚙️</button>
+
+    <div class="home-title">APEX TRACKER</div>
+    <div class="home-subtitle">Performance Operating System</div>
+
+    <div class="global-stat-box">
+        <div class="total-label" style="margin-bottom: 12px;">All-Time Total Volume</div>
+        <div class="global-number"><span id="global-all-time-total">0</span></div>
+        <div class="total-label" style="font-size: 11px; margin-top: 8px; color:#64748b;">Minutes Tracked Across All Sports</div>
+    </div>
+
+    <button class="launch-btn" onclick="navigateTo('screen-tracker')">Start Tracking →</button>
+</div>
+
+
+<!-- SCREEN 2: MAIN WORKSPACE INTERFACE -->
+<div id="screen-tracker" class="screen">
+    <div class="dashboard">
+        <div class="nav-header">
+            <h1>Workspace</h1>
+            <button class="back-btn" onclick="navigateTo('screen-home')">← Home</button>
+        </div>
+        
+        <div class="form-group sport-selector-group">
+            <label for="sport-select">Active Profile</label>
+            <select id="sport-select" class="sport-select" onchange="switchSport()">
+                <option value="Baseball">Baseball Profile</option>
+                <option value="Basketball">Basketball Profile</option>
+                <option value="Football">Football Profile</option>
+                <option value="Golf">Golf Profile</option>
+                <option value="Soccer">Soccer Profile</option>
+                <option value="Swimming">Swimming Profile</option>
+                <option value="Tennis">Tennis Profile</option>
+                <option value="Track & Field">Track & Field Profile</option>
+            </select>
+        </div>
+
+        <div class="total-box">
+            <div class="total-label"><span id="active-sport-title">Baseball</span> Current Week</div>
+            <div class="total-number"><span id="weekly-total">0</span> <span style="font-size: 20px; font-weight: 500; color: var(--text-muted);">mins</span></div>
+        </div>
+
+        <!-- NEW: LIVE STOPWATCH CONTAINER -->
+        <div class="timer-widget">
+            <label style="margin-bottom: 2px;">⚡ Live Stopwatch Tracker</label>
+            <div class="timer-display" id="stopwatch-display">00:00:00</div>
+            <div class="timer-controls">
+                <button class="timer-btn start" id="timer-toggle-btn" onclick="toggleStopwatch()">Start</button>
+                <button class="timer-btn" onclick="resetStopwatch()">Reset</button>
+                <button class="timer-btn apply" onclick="applyStopwatchTime()">Apply to Input</button>
+            </div>
+        </div>
+
+        <div class="chart-section">
+            <div class="chart-title">Daily Metric Comparison</div>
+            <div class="chart-container">
+                <div class="chart-column"><div class="chart-bar-wrapper"><div class="chart-bar" id="bar-Mon"><span class="chart-tooltip" id="tip-Mon">0m</span></div></div><div class="chart-label">M</div></div>
+                <div class="chart-column"><div class="chart-bar-wrapper"><div class="chart-bar" id="bar-Tue"><span class="chart-tooltip" id="tip-Tue">0m</span></div></div><div class="chart-label">T</div></div>
+                <div class="chart-column"><div class="chart-bar-wrapper"><div class="chart-bar" id="bar-Wed"><span class="chart-tooltip" id="tip-Wed">0m</span></div></div><div class="chart-label">W</div></div>
+                <div class="chart-column"><div class="chart-bar-wrapper"><div class="chart-bar" id="bar-Thu"><span class="chart-tooltip" id="tip-Thu">0m</span></div></div><div class="chart-label">T</div></div>
+                <div class="chart-column"><div class="chart-bar-wrapper"><div class="chart-bar" id="bar-Fri"><span class="chart-tooltip" id="tip-Fri">0m</span></div></div><div class="chart-label">F</div></div>
+                <div class="chart-column"><div class="chart-bar-wrapper"><div class="chart-bar" id="bar-Sat"><span class="chart-tooltip" id="tip-Sat">0m</span></div></div><div class="chart-label">S</div></div>
+                <div class="chart-column"><div class="chart-bar-wrapper"><div class="chart-bar" id="bar-Sun"><span class="chart-tooltip" id="tip-Sun">0m</span></div></div><div class="chart-label">S</div></div>
+            </div>
+        </div>
+
+        <button class="history-toggle-btn" onclick="toggleHistoryView()" id="history-toggle-btn">📊 View Past Weeks Archive</button>
+
+        <div id="history-archive-section" style="display: none; margin-bottom: 28px;">
+            <label>Auto-Archived History</label>
+            <div id="history-weeks-container"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="day">Day of the Week</label>
+            <select id="day">
+                <option value="Monday">Monday</option> <option value="Tuesday">Tuesday</option> <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option> <option value="Friday">Friday</option> <option value="Saturday">Saturday</option> <option value="Sunday">Sunday</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Select Focus (Tap one or more)</label>
+            <div class="options-grid" id="chips-container"></div>
+            <div id="custom-activity-wrapper" style="display: none;">
+                <input type="text" id="custom-activity" placeholder="Describe your custom workout...">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="duration">Duration (Minutes)</label>
+            <input type="number" id="duration" placeholder="Enter minutes manually or use stopwatch above" min="1">
+        </div>
+
+        <div class="btn-container">
+            <button class="clear-btn" onclick="confirmClear()">Clear Feed</button>
+            <button class="submit-btn" onclick="logSession()">Log Session</button>
+        </div>
+
+        <div class="log-list">
+            <h3>Active Week Feed</h3>
+            <div id="logs-container"></div>
+        </div>
+    </div>
+</div>
+
+
+<!-- SCREEN 3: SETTINGS & PERMANENT VAULT HISTORY -->
+<div id="screen-settings" class="screen">
+    <div class="dashboard">
+        <div class="nav-header">
+            <h1>Settings & Archives</h1>
+            <button class="back-btn" onclick="navigateTo('screen-home')">← Home</button>
+        </div>
+
+        <div style="margin-bottom: 24px;">
+            <label style="color: #ffffff; font-size: 16px; margin-bottom: 4px;">🗂️ Global Data Folders</label>
+            <p style="color: var(--text-muted); font-size: 13px; margin: 0 0 16px 0;">Calculates total minutes (active week + archived weeks) and organizes every session statement recorded.</p>
+            
+            <div id="vault-folders-wrapper"></div>
+        </div>
+
+        <div class="setting-btn-row">
+            <button class="history-toggle-btn" style="background: rgba(79, 70, 229, 0.1); color: #a5b4fc; margin-bottom: 10px;" onclick="exportRawBackup()">💾 Copy Raw Data Backup</button>
+            <p style="color: #64748b; font-size: 11px; text-align: center; margin: 0;">Apex Tracker • Secure LocalStorage Engine</p>
+            
+            <button class="small-reset-btn" onclick="factoryResetDatabase()">⚠️ Erase All History & Data</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const sportOptions = {
+        Baseball: ['Batting Cage / Hitting', 'Infield / Outfield Drills', 'Pitching Bullpen', 'Base Running', 'Scrimmage / Match Play', 'Strength / Weights', 'Speed & Sprints', 'Agility Drills', 'Film Session', 'Other'],
+        Basketball: ['Shooting Drills', 'Dribbling & Handles', 'Scrimmage / Pick-up', 'Defensive Slides', 'Conditioning', 'Free Throws', 'Rebounding', 'Speed & Agility', 'Film Study', 'Other'],
+        Football: ['Route Running', 'Strength / Weights', 'Speed & Sprints', 'Position Drills', 'Conditioning', 'Scrimmage / Playbook', 'Agility Drills', 'Tackling Technique', 'Film Session', 'Other'],
+        Golf: ['Driving Range', 'Putting Green', 'Chipping Drills', 'Full 9/18 Holes', 'Iron Play', 'Swing Mechanics', 'Core Fitness', 'Course Strategy', 'Other'],
+        Soccer: ['Positioning Drills', 'Conditioning / Fitness', 'Match Play / Scrimmage', 'Agility & Footwork', 'Passing & Receiving', 'Shooting / Finishing', 'Defensive Shape', 'Speed & Sprints', 'Tactical Film', 'Other'],
+        Swimming: ['Lap Endurance', 'Sprint Sets', 'Kickboard Drills', 'Turn & Start Mechanics', 'Stroke Technique', 'Core & Stability', 'Flexibility / Stretching', 'Dryland Conditioning', 'Other'],
+        Tennis: ['First Serves', 'Forehand Volleys', 'Backhand Rallies', 'Footwork & Baseline', 'Match Scrimmage', 'Return Positioning', 'Slice & Spin Tech', 'Cardio Tennis', 'Other'],
+        'Track & Field': ['Endurance Runs', 'Sprint Intervals', 'Core Work / Stability', 'Form Mechanics', 'Strength Training', 'Flexibility / Stretching', 'Explosive Starts', 'Agility Drills', 'Other']
+    };
+
+    let appData;
+    let selectedActivities = [];
+    let viewingHistory = false;
+
+    // Stopwatch variables
+    let stopwatchInterval = null;
+    let stopwatchElapsedSeconds = 0;
+    let isStopwatchRunning = false;
+
+    window.onload = function() {
+        appData = getFreshDataObject();
+        const savedData = localStorage.getItem('apex_os_data');
+        if (savedData) {
+            appData = JSON.parse(savedData);
+            Object.keys(sportOptions).forEach(sport => {
+                if(!appData[sport]) {
+                    appData[sport] = { total: 0, logs: [], history: [], masterVault: [] };
+                }
+                if(!appData[sport].masterVault) appData[sport].masterVault = [];
+                if(!appData[sport].history) appData[sport].history = [];
+            });
+        }
+        
+        const savedSport = localStorage.getItem('apex_os_active_sport');
+        if (savedSport && sportOptions[savedSport]) {
+            document.getElementById('sport-select').value = savedSport;
+        } else {
+            document.getElementById('sport-select').value = 'Baseball';
+        }
+
+        checkAndAutoArchiveWeek();
+        updateGlobalHomeTotal();
+        renderSportProfile();
+        buildVaultFolders();
+    };
+
+    function getFreshDataObject() {
+        return {
+            nextResetTimestamp: 0, 
+            historicalGrandTotal: 0, 
+            Baseball: { total: 0, logs: [], history: [], masterVault: [] },
+            Basketball: { total: 0, logs: [], history: [], masterVault: [] },
+            Football: { total: 0, logs: [], history: [], masterVault: [] },
+            Golf: { total: 0, logs: [], history: [], masterVault: [] },
+            Soccer: { total: 0, logs: [], history: [], masterVault: [] },
+            Swimming: { total: 0, logs: [], history: [], masterVault: [] },
+            Tennis: { total: 0, logs: [], history: [], masterVault: [] },
+            'Track & Field': { total: 0, logs: [], history: [], masterVault: [] }
+        };
+    }
+
+    /* STOPWATCH LOGIC */
+    function toggleStopwatch() {
+        const toggleBtn = document.getElementById('timer-toggle-btn');
+        if (isStopwatchRunning) {
+            // Pause
+            clearInterval(stopwatchInterval);
+            isStopwatchRunning = false;
+            toggleBtn.innerText = 'Start';
+            toggleBtn.className = 'timer-btn start';
+        } else {
+            // Start
+            isStopwatchRunning = true;
+            toggleBtn.innerText = 'Pause';
+            toggleBtn.className = 'timer-btn pause';
+            
+            stopwatchInterval = setInterval(() => {
+                stopwatchElapsedSeconds++;
+                updateStopwatchDisplay();
+            }, 1000);
         }
     }
-}
 
-function renderAllTimeTotal() {
-    // Calculates current active week logs + total of historical archives
-    const activeWeekSum = appState.currentWeekLogs.reduce((sum, item) => sum + parseInt(item.duration || 0), 0);
-    const archivedSum = appState.archivedWeeks.reduce((sum, item) => sum + parseInt(item.minutes || 0), 0);
-    const total = activeWeekSum + archivedSum;
-
-    document.getElementById('global-all-time-total').textContent = total.toLocaleString();
-}
-
-// Streak Tracking Logic (Calculated daily)
-function checkAndCalculateStreak() {
-    if (!appState.lastActiveDate) {
-        appState.streakCount = 0;
-        return;
+    function resetStopwatch() {
+        clearInterval(stopwatchInterval);
+        isStopwatchRunning = false;
+        stopwatchElapsedSeconds = 0;
+        updateStopwatchDisplay();
+        const toggleBtn = document.getElementById('timer-toggle-btn');
+        toggleBtn.innerText = 'Start';
+        toggleBtn.className = 'timer-btn start';
     }
-    
-    const todayStr = new Date().toDateString();
-    const lastActive = new Date(appState.lastActiveDate);
-    const today = new Date(todayStr);
-    
-    const diffTime = Math.abs(today - lastActive);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    if (diffDays > 1 && lastActive.toDateString() !== todayStr) {
-        appState.streakCount = 0; // Streak died
-        saveDatabase();
-    }
-}
 
-function renderStreak() {
-    document.getElementById('streak-count').textContent = appState.streakCount;
-    document.getElementById('tracker-streak-badge').innerHTML = `🔥 ${appState.streakCount} d`;
-}
-
-// --- ACTIVE PROFILE ENGINE ---
-function switchSport() {
-    const selectEl = document.getElementById('sport-select');
-    appState.selectedSport = selectEl.value;
-    document.getElementById('active-sport-title').textContent = appState.selectedSport;
-    
-    appState.selectedActivities = [];
-    document.getElementById('custom-activity-wrapper').style.display = 'none';
-    document.getElementById('custom-activity').value = '';
-    
-    renderChips();
-    renderWeeklyTotal();
-    renderWeeklyChart();
-    renderActiveLogs();
-}
-
-function renderChips() {
-    const container = document.getElementById('chips-container');
-    container.innerHTML = '';
-    
-    const activities = sportOptions[appState.selectedSport] || [];
-    activities.forEach(activity => {
-        const chip = document.createElement('div');
-        chip.className = 'option-chip';
-        chip.textContent = activity;
-        chip.onclick = () => toggleChip(activity, chip);
+    function updateStopwatchDisplay() {
+        const hrs = Math.floor(stopwatchElapsedSeconds / 3600);
+        const mins = Math.floor((stopwatchElapsedSeconds % 3600) / 60);
+        const secs = stopwatchElapsedSeconds % 60;
         
-        if (appState.selectedActivities.includes(activity)) {
-            chip.classList.add('selected');
+        const pad = (num) => String(num).padStart(2, '0');
+        document.getElementById('stopwatch-display').innerText = `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
+    }
+
+    function applyStopwatchTime() {
+        if (stopwatchElapsedSeconds === 0) {
+            alert("The timer hasn't run yet! Start the stopwatch to track live training duration.");
+            return;
         }
-        container.appendChild(chip);
-    });
-}
-
-function toggleChip(activity, element) {
-    const index = appState.selectedActivities.indexOf(activity);
-    
-    if (index > -1) {
-        appState.selectedActivities.splice(index, 1);
-        element.classList.remove('selected');
-    } else {
-        appState.selectedActivities.push(activity);
-        element.classList.add('selected');
-    }
-    
-    // Toggle custom activity input text field if 'Other' is picked
-    const customWrapper = document.getElementById('custom-activity-wrapper');
-    if (appState.selectedActivities.includes('Other')) {
-        customWrapper.style.display = 'block';
-    } else {
-        customWrapper.style.display = 'none';
-    }
-}
-
-// Set Day select input to local computer day by default
-function setDefaultWeekDay() {
-    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const currentDay = days[new Date().getDay()];
-    document.getElementById('day').value = currentDay;
-}
-
-// --- RPE SELECTION ENGINE ---
-function selectRPE(rpeValue) {
-    appState.selectedRpe = rpeValue;
-    document.querySelectorAll('.rpe-chip').forEach(chip => {
-        chip.classList.remove('active');
-    });
-    
-    const activeChip = document.querySelector(`.rpe-chip[data-rpe="${rpeValue}"]`);
-    if (activeChip) {
-        activeChip.classList.add('active');
-    }
-}
-
-// --- LIVE STOPWATCH SYSTEM ---
-function toggleStopwatch() {
-    const btn = document.getElementById('timer-toggle-btn');
-    if (stopwatchInterval) {
-        // Pause
-        clearInterval(stopwatchInterval);
-        stopwatchInterval = null;
-        btn.textContent = 'Start';
-        btn.className = 'timer-btn start';
-    } else {
-        // Start
-        btn.textContent = 'Pause';
-        btn.className = 'timer-btn pause';
-        stopwatchInterval = setInterval(() => {
-            stopwatchSeconds++;
-            updateStopwatchDisplay();
-        }, 1000);
-    }
-}
-
-function resetStopwatch() {
-    if (stopwatchInterval) {
-        clearInterval(stopwatchInterval);
-        stopwatchInterval = null;
-    }
-    stopwatchSeconds = 0;
-    updateStopwatchDisplay();
-    const btn = document.getElementById('timer-toggle-btn');
-    btn.textContent = 'Start';
-    btn.className = 'timer-btn start';
-}
-
-function updateStopwatchDisplay() {
-    const hrs = Math.floor(stopwatchSeconds / 3600).toString().padStart(2, '0');
-    const mins = Math.floor((stopwatchSeconds % 3600) / 60).toString().padStart(2, '0');
-    const secs = (stopwatchSeconds % 60).toString().padStart(2, '0');
-    document.getElementById('stopwatch-display').textContent = `${hrs}:${mins}:${secs}`;
-}
-
-function applyStopwatchTime() {
-    const roundedMinutes = Math.max(1, Math.round(stopwatchSeconds / 60));
-    document.getElementById('duration').value = roundedMinutes;
-}
-
-// --- WEEKLY SUMMARY & METRICS DISPLAY ---
-function renderWeeklyTotal() {
-    const total = appState.currentWeekLogs
-        .filter(log => log.sport === appState.selectedSport)
-        .reduce((sum, item) => sum + parseInt(item.duration || 0), 0);
         
-    document.getElementById('weekly-total').textContent = total;
-}
+        // Convert to minutes, rounding up to the nearest minute so fast tests or short breaks count as 1m
+        const minutes = Math.max(1, Math.round(stopwatchElapsedSeconds / 60));
+        document.getElementById('duration').value = minutes;
+        
+        // Automatically set the selector to today's weekday
+        const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const todayName = weekdays[new Date().getDay()];
+        document.getElementById('day').value = todayName;
+        
+        alert(`Successfully applied ${minutes} minute(s) to duration input for ${todayName}!`);
+    }
 
-function renderWeeklyChart() {
-    const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    const dayTotals = { Monday: 0, Tuesday: 0, Wednesday: 0, Thursday: 0, Friday: 0, Saturday: 0, Sunday: 0 };
-    
-    // Accumulate times for current active sport profile
-    appState.currentWeekLogs
-        .filter(log => log.sport === appState.selectedSport)
-        .forEach(log => {
-            if (dayTotals[log.day] !== undefined) {
-                dayTotals[log.day] += parseInt(log.duration || 0);
+    function getNextSundayDeadline() {
+        const now = new Date();
+        const deadline = new Date(now);
+        const currentDay = now.getDay();
+        const daysToSunday = currentDay === 0 ? 0 : 7 - currentDay;
+        
+        deadline.setDate(now.getDate() + daysToSunday);
+        deadline.setHours(23, 59, 0, 0); 
+        
+        if (now.getTime() > deadline.getTime()) {
+            deadline.setDate(deadline.getDate() + 7);
+        }
+        return deadline.getTime();
+    }
+
+    function checkAndAutoArchiveWeek() {
+        const now = new Date().getTime();
+
+        if (!appData.nextResetTimestamp) {
+            appData.nextResetTimestamp = getNextSundayDeadline();
+            saveToLocalStorage();
+            return;
+        }
+
+        if (now >= appData.nextResetTimestamp) {
+            Object.keys(sportOptions).forEach(sport => {
+                if (appData[sport] && appData[sport].total > 0) {
+                    const archiveLabel = "Week ending " + new Date(appData.nextResetTimestamp).toLocaleDateString('en-US', {month:'short', day:'numeric'});
+                    const pastWeekEntry = {
+                        archiveDate: archiveLabel,
+                        totalVolume: appData[sport].total
+                    };
+                    appData[sport].history.unshift(pastWeekEntry);
+                    
+                    appData.historicalGrandTotal += appData[sport].total;
+                    
+                    appData[sport].total = 0;
+                    appData[sport].logs = [];
+                }
+            });
+
+            appData.nextResetTimestamp = getNextSundayDeadline();
+            saveToLocalStorage();
+        }
+    }
+
+    function updateGlobalHomeTotal() {
+        let activeWeekSum = 0;
+        Object.keys(sportOptions).forEach(sport => {
+            if (appData[sport]) {
+                activeWeekSum += appData[sport].total;
             }
         });
         
-    const maxVal = Math.max(...Object.values(dayTotals), 60); // Minimum scale floor of 60 mins
-    const barIdMap = { Monday: 'Mon', Tuesday: 'Tue', Wednesday: 'Wed', Thursday: 'Thu', Friday: 'Fri', Saturday: 'Sat', Sunday: 'Sun' };
-    
-    weekDays.forEach(day => {
-        const val = dayTotals[day];
-        const barPct = (val / maxVal) * 100;
-        const barId = barIdMap[day];
-        
-        const barEl = document.getElementById(`bar-${barId}`);
-        const tipEl = document.getElementById(`tip-${barId}`);
-        
-        if (barEl && tipEl) {
-            barEl.style.height = `${barPct}%`;
-            tipEl.textContent = `${val}m`;
-        }
-    });
-}
+        const grandTotal = (appData.historicalGrandTotal || 0) + activeWeekSum;
+        document.getElementById('global-all-time-total').innerText = grandTotal;
+    }
 
-// --- TRANSACTION ENTRY LOGGING ---
-function logSession() {
-    const day = document.getElementById('day').value;
-    const durationInput = document.getElementById('duration').value;
-    const duration = parseInt(durationInput);
-    
-    if (isNaN(duration) || duration <= 0) {
-        alert("Please enter a valid training duration in minutes.");
-        return;
-    }
-    
-    if (appState.selectedActivities.length === 0) {
-        alert("Please choose at least one training focus target.");
-        return;
-    }
-    
-    if (!appState.selectedRpe) {
-        alert("Please rate your workout intensity (RPE).");
-        return;
-    }
-    
-    let activitiesJoined = [...appState.selectedActivities];
-    if (activitiesJoined.includes('Other')) {
-        const customText = document.getElementById('custom-activity').value.trim();
-        if (customText) {
-            // Replace generic 'Other' item with specific custom activity description text
-            const index = activitiesJoined.indexOf('Other');
-            activitiesJoined[index] = customText;
+    function navigateTo(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+        if(screenId === 'screen-home') {
+            updateGlobalHomeTotal();
+        }
+        if(screenId === 'screen-settings') {
+            buildVaultFolders();
         }
     }
-    
-    const todayStr = new Date().toDateString();
-    
-    // Create Log object
-    const newSession = {
-        id: Date.now().toString(),
-        sport: appState.selectedSport,
-        day: day,
-        activities: activitiesJoined,
-        rpe: appState.selectedRpe,
-        duration: duration,
-        timestamp: new Date().toLocaleString()
-    };
-    
-    // Append to live feeds
-    appState.currentWeekLogs.unshift(newSession);
-    appState.allTimeLogs.unshift(newSession);
-    
-    // Calculate Training Day Streak incrementation
-    if (!appState.lastActiveDate) {
-        appState.streakCount = 1;
-    } else {
-        const lastActive = new Date(appState.lastActiveDate);
-        const today = new Date(todayStr);
-        const diffTime = Math.abs(today - lastActive);
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        
-        if (diffDays === 1) {
-            appState.streakCount += 1; // Consecutive day progression
-        } else if (diffDays > 1) {
-            appState.streakCount = 1;  // Broken streak fallback restart
-        }
-    }
-    appState.lastActiveDate = todayStr;
-    
-    saveDatabase();
-    
-    // Reset Form Fields
-    document.getElementById('duration').value = '';
-    appState.selectedActivities = [];
-    appState.selectedRpe = null;
-    document.querySelectorAll('.rpe-chip').forEach(chip => chip.classList.remove('active'));
-    document.getElementById('custom-activity').value = '';
-    document.getElementById('custom-activity-wrapper').style.display = 'none';
-    
-    // Update UI Render states
-    renderChips();
-    renderWeeklyTotal();
-    renderWeeklyChart();
-    renderActiveLogs();
-    renderAllTimeTotal();
-    renderStreak();
-    
-    // Auto Scroll active week logs list view into focus focus viewport
-    document.querySelector('.log-list').scrollIntoView({ behavior: 'smooth' });
-}
 
-function renderActiveLogs() {
-    const container = document.getElementById('logs-container');
-    container.innerHTML = '';
-    
-    // Filter active week logs exclusively for current visual profile target
-    const currentSportLogs = appState.currentWeekLogs.filter(log => log.sport === appState.selectedSport);
-    
-    if (currentSportLogs.length === 0) {
-        container.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:13px; padding:20px 0;">No logs logged for this profile yet this week.</div>`;
-        return;
+    function getFormattedTimestamp() {
+        const now = new Date();
+        const options = { month: 'short', day: 'numeric', year: 'numeric' };
+        const dateStr = now.toLocaleDateString('en-US', options);
+        let hours = now.getHours();
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12 || 12;
+        return `${dateStr} @ ${hours}:${minutes} ${ampm}`;
     }
-    
-    currentSportLogs.forEach(log => {
-        const item = document.createElement('div');
-        item.className = 'log-item';
-        
-        const rpeClass = `rpe-tag-${log.rpe.replace('-', '-')}`;
-        
-        item.innerHTML = `
-            <div>
-                <div class="log-day">${log.day}</div>
-                <div class="log-activity">${log.activities.join(', ')}</div>
-                <div class="log-time-stamp">Log Date: ${log.timestamp}</div>
-            </div>
-            <div class="log-stats">
-                <span class="log-time">${log.duration} min</span>
-                <span class="log-rpe-tag ${rpeClass}">RPE ${log.rpe}</span>
-            </div>
-        `;
-        container.appendChild(item);
-    });
-}
 
-// Confirm dialog layer prior to wiping feed
-function confirmClear() {
-    if (confirm("Are you sure you want to clear this week's workspace? This action archives the weekly total to history and empties the active dashboard feed.")) {
-        archiveCurrentWeek();
-    }
-}
+    function renderSportProfile() {
+        const currentSport = document.getElementById('sport-select').value;
+        document.getElementById('active-sport-title').innerText = currentSport;
+        document.getElementById('weekly-total').innerText = appData[currentSport].total;
+        
+        selectedActivities = [];
+        document.getElementById('custom-activity-wrapper').style.display = 'none';
+        document.getElementById('custom-activity').value = '';
 
-// --- ARCHIVE ENGINE ---
-function archiveCurrentWeek() {
-    if (appState.currentWeekLogs.length === 0) {
-        alert("Nothing to archive — your active workspace is already empty!");
-        return;
-    }
-    
-    // Consolidate current week's logs into aggregated sports statistics objects
-    const totalMinutesBySport = {};
-    appState.currentWeekLogs.forEach(log => {
-        totalMinutesBySport[log.sport] = (totalMinutesBySport[log.sport] || 0) + log.duration;
-    });
-    
-    const weekId = Date.now().toString();
-    const dateStamp = new Date().toLocaleDateString();
-    
-    Object.keys(totalMinutesBySport).forEach(sportKey => {
-        appState.archivedWeeks.unshift({
-            id: `${weekId}-${sportKey}`,
-            weekEnding: dateStamp,
-            sport: sportKey,
-            minutes: totalMinutesBySport[sportKey]
+        const chipsContainer = document.getElementById('chips-container');
+        chipsContainer.innerHTML = '';
+        
+        sportOptions[currentSport].forEach(activity => {
+            const chip = document.createElement('div');
+            chip.className = 'option-chip';
+            chip.innerText = activity;
+            chip.onclick = function() { toggleOption(this, activity); };
+            chipsContainer.appendChild(chip);
         });
-    });
-    
-    // Wipe live working workspace buffer, keeping permanent individual logged database items
-    appState.currentWeekLogs = [];
-    saveDatabase();
-    
-    // Refresh GUI states
-    renderWeeklyTotal();
-    renderWeeklyChart();
-    renderActiveLogs();
-    renderAllTimeTotal();
-    
-    alert("Weekly sessions successfully compiled and transferred to historical data folders!");
-}
 
-function toggleHistoryView() {
-    const el = document.getElementById('history-archive-section');
-    const btn = document.getElementById('history-toggle-btn');
-    if (el.style.display === 'none') {
-        el.style.display = 'block';
-        btn.textContent = '📊 Close Past Weeks Archive';
-        renderHistoryArchive();
-    } else {
-        el.style.display = 'none';
-        btn.textContent = '📊 View Past Weeks Archive';
-    }
-}
-
-function renderHistoryArchive() {
-    const container = document.getElementById('history-weeks-container');
-    container.innerHTML = '';
-    
-    // Group historical metrics by week ending date
-    const grouped = {};
-    appState.archivedWeeks.forEach(archive => {
-        if (!grouped[archive.weekEnding]) {
-            grouped[archive.weekEnding] = [];
+        const logsContainer = document.getElementById('logs-container');
+        logsContainer.innerHTML = '';
+        
+        if (appData[currentSport].logs.length === 0) {
+            logsContainer.innerHTML = '<div style="color:var(--text-muted); font-size:13px; text-align:center; padding:10px;">No workouts logged this week.</div>';
+        } else {
+            appData[currentSport].logs.forEach(log => {
+                const item = document.createElement('div');
+                item.className = 'log-item';
+                item.innerHTML = `
+                    <div>
+                        <div class="log-day">${log.day}</div>
+                        <div class="log-activity">${log.activities}</div>
+                        <div class="log-time-stamp">Recorded: ${log.timestamp}</div>
+                    </div>
+                    <div class="log-time">${log.duration}m</div>
+                `;
+                logsContainer.appendChild(item);
+            });
         }
-        grouped[archive.weekEnding].push(archive);
-    });
-    
-    const keys = Object.keys(grouped);
-    if (keys.length === 0) {
-        container.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:12px; padding:12px 0;">No auto-archived weeks found. Clear feed to create an archive.</div>`;
-        return;
+        
+        updateWeeklyChart(currentSport);
+        renderHistoryList();
     }
-    
-    keys.forEach(date => {
-        const card = document.createElement('div');
-        card.className = 'history-card';
+
+    function updateWeeklyChart(sport) {
+        const dailyTotals = { Monday: 0, Tuesday: 0, Wednesday: 0, Thursday: 0, Friday: 0, Saturday: 0, Sunday: 0 };
+        const logs = appData[sport].logs || [];
         
-        let contents = `<div class="history-week-title"><span>Week Ending: ${date}</span></div><div style="margin-top:8px;">`;
-        
-        grouped[date].forEach(item => {
-            contents += `<div style="display:flex; justify-content:space-between; font-size:13px; margin:4px 0; color:var(--text-muted);">
-                <span>🏀 ${item.sport} Profile</span>
-                <span style="font-weight:700; color:#ffffff;">${item.minutes} mins</span>
-            </div>`;
+        logs.forEach(log => {
+            if (dailyTotals[log.day] !== undefined) {
+                dailyTotals[log.day] += log.duration;
+            }
         });
-        contents += '</div>';
-        
-        card.innerHTML = contents;
-        container.appendChild(card);
-    });
-}
 
-// --- SETTINGS PORTAL VAULT SYSTEM ---
-function populateVault() {
-    const wrapper = document.getElementById('vault-folders-wrapper');
-    if (!wrapper) return;
-    wrapper.innerHTML = '';
-    
-    const sportKeys = Object.keys(sportOptions);
-    
-    sportKeys.forEach(sport => {
-        // Collect every transaction matching profile
-        const activeWeekMatching = appState.currentWeekLogs.filter(log => log.sport === sport);
-        const archivedMatching = appState.archivedWeeks.filter(arc => arc.sport === sport);
+        const values = Object.values(dailyTotals);
+        const maxVal = Math.max(...values, 1);
+        const dayKeys = { Monday: 'Mon', Tuesday: 'Tue', Wednesday: 'Wed', Thursday: 'Thu', Friday: 'Fri', Saturday: 'Sat', Sunday: 'Sun' };
         
-        const activeSum = activeWeekMatching.reduce((sum, item) => sum + parseInt(item.duration || 0), 0);
-        const archivedSum = archivedMatching.reduce((sum, item) => sum + parseInt(item.minutes || 0), 0);
-        const netSum = activeSum + archivedSum;
-        
-        const folder = document.createElement('div');
-        folder.className = 'folder-container';
-        
-        folder.innerHTML = `
-            <div class="folder-header" onclick="toggleFolder(this)">
-                <span>📂 ${sport} Vault</span>
-                <span style="color:#a5b4fc;">${netSum} Mins Total</span>
-            </div>
-            <div class="folder-content">
-                ${renderVaultSessions(sport, activeWeekMatching)}
-            </div>
-        `;
-        
-        wrapper.appendChild(folder);
-    });
-}
-
-function renderVaultSessions(sportName, activeWeekItems) {
-    // Collect all elements associated with this sport from the master chronological database list
-    const masterItems = appState.allTimeLogs.filter(log => log.sport === sportName);
-    
-    if (masterItems.length === 0) {
-        return `<div class="vault-item" style="color:var(--text-muted); text-align:center;">Empty Folder - No training entries logged.</div>`;
+        Object.keys(dailyTotals).forEach(day => {
+            const shortId = dayKeys[day];
+            const barElement = document.getElementById(`bar-${shortId}`);
+            const tooltipElement = document.getElementById(`tip-${shortId}`);
+            const totalMins = dailyTotals[day];
+            
+            const pct = (totalMins / maxVal) * 100;
+            barElement.style.height = totalMins > 0 ? `${Math.max(pct, 8)}%` : '0%';
+            tooltipElement.innerText = `${totalMins}m`;
+        });
     }
-    
-    return masterItems.map(item => `
-        <div class="vault-item">
-            <div style="display:flex; justify-content:space-between; font-weight:700;">
-                <span>${item.day} (${item.timestamp.split(',')[0]})</span>
-                <span style="color:var(--success);">${item.duration} mins</span>
-            </div>
-            <div style="color:var(--text-muted); margin-top:2px;">Targets: ${item.activities.join(', ')} | RPE ${item.rpe}</div>
-        </div>
-    `).join('');
-}
 
-function toggleFolder(headerElement) {
-    const content = headerElement.nextElementSibling;
-    const isVisible = content.style.display === 'block';
-    
-    // Close other directories
-    document.querySelectorAll('.folder-content').forEach(fc => {
-        fc.style.display = 'none';
-    });
-    
-    content.style.display = isVisible ? 'none' : 'block';
-}
+    function renderHistoryList() {
+        const currentSport = document.getElementById('sport-select').value;
+        const historyContainer = document.getElementById('history-weeks-container');
+        historyContainer.innerHTML = '';
 
-// --- FILE SYSTEM UTILITY ACTIONS ---
-function exportRawBackup() {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
-    const dlAnchorElem = document.createElement('a');
-    dlAnchorElem.setAttribute("href", dataStr);
-    dlAnchorElem.setAttribute("download", `apex_tracker_backup_${Date.now()}.json`);
-    dlAnchorElem.click();
-}
+        const historyArray = appData[currentSport].history || [];
+        if (historyArray.length === 0) {
+            historyContainer.innerHTML = '<div style="color:var(--text-muted); font-size:13px; padding:5px;">No automatic archives found yet.</div>';
+        } else {
+            historyArray.forEach(week => {
+                const card = document.createElement('div');
+                card.className = 'history-card';
+                card.innerHTML = `
+                    <div class="history-week-title">
+                        <span>${week.archiveDate}</span>
+                        <span style="color:var(--success)">${week.totalVolume} mins</span>
+                    </div>
+                `;
+                historyContainer.appendChild(card);
+            });
+        }
+    }
 
-function factoryResetDatabase() {
-    if (confirm("🚨 WARNING: This will permanently delete your entire local workout history, streak, and sports databases! This action cannot be undone. Proceed?")) {
-        localStorage.removeItem('apex_tracker_db');
-        appState = {
-            selectedSport: 'Baseball',
-            selectedActivities: [],
-            selectedRpe: null,
-            currentWeekLogs: [],
-            archivedWeeks: [],
-            allTimeLogs: [],
-            streakCount: 0,
-            lastActiveDate: null
+    function buildVaultFolders() {
+        const container = document.getElementById('vault-folders-wrapper');
+        container.innerHTML = '';
+
+        Object.keys(sportOptions).forEach(sport => {
+            const folderArr = appData[sport].masterVault || [];
+            const currentActiveWeekMins = appData[sport].total || 0;
+            
+            let archivedSum = 0;
+            if(appData[sport].history) {
+                appData[sport].history.forEach(w => archivedSum += w.totalVolume);
+            }
+            const overallMins = currentActiveWeekMins + archivedSum;
+
+            const folder = document.createElement('div');
+            folder.className = 'folder-container';
+            
+            folder.innerHTML = `
+                <div class="folder-header" onclick="toggleFolder(this)">
+                    <span>📂 ${sport} Vault (${folderArr.length} logs)</span>
+                    <span style="color: #818cf8; font-size:14px;">${overallMins} total mins</span>
+                </div>
+                <div class="folder-content" id="vault-content-${sport.replace(/[^a-zA-Z0-BA-Z0-9]/g, '')}">
+                    ${folderArr.length === 0 ? 
+                        '<div style="color:var(--text-muted); font-size:12px; text-align:center; padding:8px;">Vault is clean. No historic logs saved.</div>' : 
+                        folderArr.map(item => `<div class="vault-item"><strong>${item.timestamp}</strong> — Spent ${item.duration} mins on <em>${item.activities}</em> (${item.day})</div>`).join('')
+                    }
+                </div>
+            `;
+            container.appendChild(folder);
+        });
+    }
+
+    function toggleFolder(headerElement) {
+        const contentPanel = headerElement.nextElementSibling;
+        const isOpen = contentPanel.style.display === 'block';
+        contentPanel.style.display = isOpen ? 'none' : 'block';
+    }
+
+    function toggleOption(chipElement, activityName) {
+        if (activityName === 'Other') {
+            const wrapper = document.getElementById('custom-activity-wrapper');
+            if (chipElement.classList.contains('selected')) {
+                chipElement.classList.remove('selected');
+                wrapper.style.display = 'none';
+                selectedActivities = selectedActivities.filter(a => a !== 'Other');
+            } else {
+                chipElement.classList.add('selected');
+                wrapper.style.display = 'block';
+                selectedActivities.push('Other');
+            }
+            return;
+        }
+
+        if (chipElement.classList.contains('selected')) {
+            chipElement.classList.remove('selected');
+            selectedActivities = selectedActivities.filter(a => a !== activityName);
+        } else {
+            chipElement.classList.add('selected');
+            selectedActivities.push(activityName);
+        }
+    }
+
+    function switchSport() {
+        const currentSport = document.getElementById('sport-select').value;
+        localStorage.setItem('apex_os_active_sport', currentSport);
+        renderSportProfile();
+    }
+
+    function logSession() {
+        const currentSport = document.getElementById('sport-select').value;
+        const dayInput = document.getElementById('day').value;
+        const durationInput = parseInt(document.getElementById('duration').value);
+
+        if (!durationInput || durationInput <= 0) {
+            alert('Please specify a positive duration run.');
+            return;
+        }
+
+        let activitySummaryList = [...selectedActivities];
+        if (activitySummaryList.includes('Other')) {
+            const customVal = document.getElementById('custom-activity').value.trim();
+            if (!customVal) {
+                alert('Please outline your custom details.');
+                return;
+            }
+            activitySummaryList = activitySummaryList.map(a => a === 'Other' ? `Custom: ${customVal}` : a);
+        }
+
+        if (activitySummaryList.length === 0) {
+            alert('Please specify at least one action index Focus point.');
+            return;
+        }
+
+        const newLog = {
+            day: dayInput,
+            activities: activitySummaryList.join(', '),
+            duration: durationInput,
+            timestamp: getFormattedTimestamp()
         };
-        
-        // Reset local variables
-        if (stopwatchInterval) {
-            clearInterval(stopwatchInterval);
-            stopwatchInterval = null;
-        }
-        stopwatchSeconds = 0;
-        updateStopwatchDisplay();
-        
-        // Reset drop-down UI selectors to standard indexes
-        document.getElementById('sport-select').selectedIndex = 0;
-        document.getElementById('day').selectedIndex = 0;
-        
-        // Save clean database
-        saveDatabase();
-        
-        // Recalculate visuals
-        switchSport();
-        renderAllTimeTotal();
-        renderStreak();
-        populateVault();
-        
-        alert("Local storage databases wiped completely. Apex Tracker initialized to clean default state!");
-        navigateTo('screen-home');
+
+        appData[currentSport].logs.unshift(newLog);
+        appData[currentSport].masterVault.unshift(newLog);
+        appData[currentSport].total += durationInput;
+
+        document.getElementById('duration').value = '';
+        saveToLocalStorage();
+        renderSportProfile();
     }
-}
+
+    function confirmClear() {
+        if (confirm('Are you sure you want to completely clear out the Active Week Feed? (Historical master vault balances will remain safe inside settings).')) {
+            const currentSport = document.getElementById('sport-select').value;
+            appData[currentSport].logs = [];
+            appData[currentSport].total = 0;
+            saveToLocalStorage();
+            renderSportProfile();
+            updateGlobalHomeTotal();
+        }
+    }
+
+    function toggleHistoryView() {
+        const view = document.getElementById('history-archive-section');
+        const btn = document.getElementById('history-toggle-btn');
+        viewingHistory = !viewingHistory;
+        if (viewingHistory) {
+            view.style.display = 'block';
+            btn.innerText = '🔼 Hide Past Weeks Archive';
+        } else {
+            view.style.display = 'none';
+            btn.innerText = '📊 View Past Weeks Archive';
+        }
+    }
+
+    function exportRawBackup() {
+        const rawString = JSON.stringify(appData);
+        navigator.clipboard.writeText(rawString).then(() => {
+            alert('System Backup Matrix copied securely to clipboard text string data payload!');
+        }).catch(() => {
+            alert('Failed to execute automatic clip routine. Please copy manually from system profile structures.');
+        });
+    }
+
+    function factoryResetDatabase() {
+        if (confirm('CRITICAL ACTION: This permanently wipes out ALL active files, global settings, automatic archives, and historic master vaults. This action is irreversible. Continue?')) {
+            appData = getFreshDataObject();
+            localStorage.removeItem('apex_os_data');
+            localStorage.removeItem('apex_os_active_sport');
+            document.getElementById('sport-select').value = 'Baseball';
+            resetStopwatch();
+            renderSportProfile();
+            buildVaultFolders();
+            updateGlobalHomeTotal();
+            navigateTo('screen-home');
+            alert('Apex Storage Ecosystem reset completed successfully.');
+        }
+    }
+
+    function saveToLocalStorage() {
+        localStorage.setItem('apex_os_data', JSON.stringify(appData));
+    }
 </script>
 </body>
 </html>
